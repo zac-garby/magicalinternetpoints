@@ -1,0 +1,12 @@
+ideas for websites to integrate with:
+
+github (stars, followers)
+gitlab (stars, followers)
+reddit (karma)
+twitter (followers)
+linkedin (connections)
+twitch (followers)
+youtube (subscribers)
+facebook (friends)
+hackernews (karma)
+stackoverflow (reputation)
