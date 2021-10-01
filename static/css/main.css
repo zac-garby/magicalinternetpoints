@@ -71,3 +71,9 @@ a {
     color: #88251e;
     font-style: italic;
 }
+
+a.home-link {
+    color: #f0f0f0;
+    font-style: normal;
+    text-decoration: none;
+}
