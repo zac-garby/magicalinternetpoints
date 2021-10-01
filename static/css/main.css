@@ -43,44 +43,6 @@ section {
     padding: 20px;
 }
 
-section#home {
-    display: grid;
-    grid-template-columns: 60% auto;
-    column-gap: 20px;
-    font-size: 14pt;
-}
-
-div.point-subtotals {
-    height: 500px;
-    overflow-y: auto;
-}
-
-div.point-source {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px;
-    margin-bottom: 10px;
-}
-
-div.source {
-    display: flex;
-    flex-direction: column;
-}
-
-div.source span.name {
-    font-weight: bolder;
-}
-
-div.source span.description, div.source span.username {
-    color: #777;
-    font-size: 12pt;
-}
-
-span.point-subtotal {
-    font-size: 18pt;
-}
-
 ul.links {
     list-style: none;
     padding-left: 10px;
