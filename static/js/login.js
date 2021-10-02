@@ -6,23 +6,11 @@ function login() {
     form.set("email", email)
     form.set("password", password)
 
-    var req = new XMLHttpRequest()
+    post("/api/login", form, function(resp) {
+        document.cookie = "session=" + resp.session_id + "; expires=" + resp.expiry + "; path=/;"
 
-    req.onreadystatechange = function() {
-        if (this.readyState != 4) return;
-
-        var resp = JSON.parse(this.responseText)
-
-        if (this.status == 200) {
-            console.log("logged in. session id =", resp)
-            document.cookie = "sessionID=" + resp.session_id + "; expires=" + resp.expiry + "; path=/;"
-            
-            window.location.pathname = "/"
-        } else {
-            console.error(resp)
-        }
-    }
-
-    req.open("POST", "/api/login")
-    req.send(form)
+        window.location.pathname = "/"
+    }, function(resp) {
+        console.error(resp)
+    })
 }

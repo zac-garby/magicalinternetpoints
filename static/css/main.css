@@ -77,3 +77,7 @@ a.home-link {
     font-style: normal;
     text-decoration: none;
 }
+
+.hidden {
+    display: none !important;
+}

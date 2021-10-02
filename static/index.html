@@ -12,16 +12,19 @@
 
     <link rel="stylesheet" href="/static/css/main.css">
     <link rel="stylesheet" href="/static/css/index.css">
+
+    <script src="/static/js/global.js"></script>
+    <script src="/static/js/index.js"></script>
 </head>
-<body>
+<body onload="onload()">
     <div class="wrapper">
         <header>
             <h1><a href="/" class="home-link">magical<span class="bolder">internet</span>points</a></h1>
             <h1 class="points-total">5,371 points</h1>
         </header>
-        <section id="home">
+        <section id="home" class="hidden">
             <div>
-                <p>Hello <strong>Zac</strong>!</p>
+                <p>Hello <strong id="username">username</strong>!</p>
                 <p>You currently have <span class="bolder red">5,371</span> magical internet points, which means absolutely nothing but well done you :)</p>
                 <ul class="links">
                     <li><a href="#">Your Profile</a></li>
