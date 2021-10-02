@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
-	"log"
 	"math/rand"
 	"net/http"
 	"os"
@@ -105,7 +104,7 @@ func (a *API) apiLogin(w http.ResponseWriter, r *http.Request) {
 
 		insert.Close()
 
-		fmt.Fprint(w, sessID)
+		fmt.Fprintf(w, `{"session_id": "%s", "expiry": "%s"}`, sessID, expiry.UTC())
 	} else {
 		errorResponse(w, "INVALID_PASSWORD", "Invalid password.", http.StatusBadRequest)
 		return
@@ -132,8 +131,6 @@ func newSessionID() string {
 	for i := range s {
 		s[i] = letters[rand.Intn(len(letters))]
 	}
-
-	log.Println(string(s))
 
 	return string(s)
 }
