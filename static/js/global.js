@@ -16,3 +16,7 @@ function post(path, form, success, failure) {
     req.open("POST", path)
     req.send(form)
 }
+
+function setError(message) {
+    document.getElementById("error").innerHTML = message
+}

@@ -11,6 +11,16 @@ function login() {
 
         window.location.pathname = "/"
     }, function(resp) {
-        console.error(resp)
+        switch (resp.code) {
+        case "USER_DOES_NOT_EXIST":
+            setError("No user with that email exists.")
+            break
+        case "INVALID_PASSWORD":
+            setError("Your password is incorrect.")
+            break
+        default:
+            setError("An unexpected server error occurred. Please try again later.")
+            break
+        }
     })
 }

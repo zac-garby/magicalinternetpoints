@@ -81,3 +81,10 @@ a.home-link {
 .hidden {
     display: none !important;
 }
+
+p#error {
+    color: #88251e;
+    font-weight: bold;
+    font-size: 18pt;
+    text-align: center;
+}
