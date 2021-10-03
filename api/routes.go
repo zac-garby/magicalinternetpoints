@@ -18,6 +18,7 @@ func RegisterAPI(r *mux.Router) error {
 	}
 
 	api.Subrouter.Methods("POST").PathPrefix("/login").HandlerFunc(api.apiLogin)
+	api.Subrouter.Methods("POST").PathPrefix("/register").HandlerFunc(api.apiRegister)
 	api.Subrouter.Methods("POST").PathPrefix("/get-user").HandlerFunc(api.apiGetUser)
 
 	return nil
@@ -48,7 +49,7 @@ func (a *API) apiLogin(w http.ResponseWriter, r *http.Request) {
 
 	if hexHash == user.Hash {
 		var (
-			sessID = newSessionID()
+			sessID = randomString(16)
 			expiry = time.Now().Add(time.Hour * 24 * 7)
 		)
 
@@ -65,6 +66,44 @@ func (a *API) apiLogin(w http.ResponseWriter, r *http.Request) {
 		errorResponse(w, "INVALID_PASSWORD", "Invalid password.", http.StatusBadRequest)
 		return
 	}
+}
+
+func (a *API) apiRegister(w http.ResponseWriter, r *http.Request) {
+	var (
+		username = r.PostFormValue("username")
+		email    = r.PostFormValue("email")
+		password = r.PostFormValue("password")
+		count    int
+	)
+
+	// check if a user already exists
+	if err := a.DB.QueryRow("SELECT COUNT(id) as count FROM users WHERE email = ? OR username = ?", email, username).
+		Scan(&count); err != nil {
+		errorResponse(w, "DATABASE_ERROR", err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	if count > 0 {
+		errorResponse(w, "USER_ALREADY_EXISTS", "A user with that username or email already exists. Is it you?", http.StatusBadRequest)
+		return
+	}
+
+	var (
+		salt    = randomString(16)
+		hash    = sha256.Sum256(append([]byte(password), salt...))
+		hexHash = fmt.Sprintf("%x", hash)
+	)
+
+	insert, err := a.DB.Query("INSERT INTO users (username, email, password_hash, password_salt) VALUES (?, ?, ?, ?)",
+		username, email, hexHash, salt)
+	if err != nil {
+		errorResponse(w, "DATABASE_ERROR", err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	insert.Close()
+
+	fmt.Fprint(w, "{}")
 }
 
 func (a *API) apiGetUser(w http.ResponseWriter, r *http.Request) {

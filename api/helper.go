@@ -27,9 +27,9 @@ func errorResponse(w http.ResponseWriter, code string, msg string, status int) {
 	w.Write(j)
 }
 
-func newSessionID() string {
+func randomString(length int) string {
 	letters := []byte("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
-	s := make([]byte, 16)
+	s := make([]byte, length)
 
 	for i := range s {
 		s[i] = letters[rand.Intn(len(letters))]
@@ -50,7 +50,7 @@ func (a *API) getSession(r *http.Request) (*User, error) {
 		expiryStr string
 	)
 
-	err = a.DB.QueryRow("SELECT id, username, password_hash, password_salt, email, expiry FROM users INNER JOIN sessions WHERE sess_id = ?",
+	err = a.DB.QueryRow("SELECT id, username, password_hash, password_salt, email, expiry FROM users INNER JOIN sessions ON users.id = sessions.user_id WHERE sess_id = ?",
 		sessionID).Scan(&user.ID, &user.Username, &user.Hash, &user.Salt, &user.Email, &expiryStr)
 	if err != nil {
 		if err == sql.ErrNoRows {
