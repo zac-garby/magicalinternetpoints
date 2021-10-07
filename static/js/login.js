@@ -20,6 +20,7 @@ function login() {
             break
         default:
             setError("An unexpected server error occurred. Please try again later.")
+            console.error(resp)
             break
         }
     })
@@ -45,6 +46,7 @@ function register() {
             break
         default:
             setError("An unexpected server error occurred. Please try again later.")
+            console.error(resp)
             break
         }
     })

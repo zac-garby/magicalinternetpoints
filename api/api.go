@@ -36,12 +36,11 @@ func MakeAPI(r *mux.Router) (*API, error) {
 		ip       = os.Getenv("MIP_DB_IP")
 		port     = os.Getenv("MIP_DB_PORT")
 		dbName   = os.Getenv("MIP_DB_DATABASE")
+
+		source = fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", username, password, ip, port, dbName)
 	)
 
-	db, err := sql.Open("mysql",
-		fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", username, password, ip, port, dbName),
-	)
-
+	db, err := sql.Open("mysql", source)
 	if err != nil {
 		return nil, err
 	}
