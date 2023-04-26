@@ -16,3 +16,16 @@ type User struct {
 	Username     string
 	PasswordHash []byte
 }
+
+type Site struct {
+	ID               int
+	Title            string
+	URL              string
+	ScoreDescription string
+}
+
+type Account struct {
+	Site       Site
+	Username   string
+	ProfileURL string
+}

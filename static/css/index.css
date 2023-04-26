@@ -17,6 +17,10 @@ div.point-source {
     margin-bottom: 10px;
 }
 
+div.point-source:first-child {
+    padding-top: 0;
+}
+
 div.source {
     display: flex;
     flex-direction: column;

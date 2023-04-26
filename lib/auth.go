@@ -145,6 +145,46 @@ func (b *Backend) LookupUsername(username string) (*User, error) {
 	return user, nil
 }
 
+func (b *Backend) LookupAccounts(userID int) ([]*Account, error) {
+	stmt, err := b.Storage.Conn().Prepare(`
+		SELECT accounts.site_id, accounts.username, accounts.profile_url,
+		       sites.title, sites.url, sites.score_description
+		FROM accounts
+		INNER JOIN sites ON accounts.site_id = sites.id
+		WHERE accounts.user_id = ?
+	`)
+	if err != nil {
+		panic(err)
+	}
+	defer stmt.Close()
+
+	rows, err := stmt.Query(userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var accounts []*Account
+	for rows.Next() {
+		account := new(Account)
+		site := new(Site)
+		if err = rows.Scan(
+			&site.ID, &account.Username, &account.ProfileURL,
+			&site.Title, &site.URL, &site.ScoreDescription,
+		); err != nil {
+			return nil, err
+		}
+		account.Site = *site
+		accounts = append(accounts, account)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return accounts, nil
+}
+
 func (b *Backend) CreateUser(u User) error {
 	// Get a reference to the underlying *sql.DB object
 	db := b.Storage.Conn()

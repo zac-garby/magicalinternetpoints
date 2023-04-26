@@ -39,8 +39,14 @@ func main() {
 		if err != nil {
 			return c.Render("welcome", fiber.Map{})
 		} else {
+			accounts, err := backend.LookupAccounts(user.ID)
+			if err != nil {
+				panic(err)
+			}
+
 			return c.Render("index", fiber.Map{
-				"User": user,
+				"User":     user,
+				"Accounts": accounts,
 			})
 		}
 	})
