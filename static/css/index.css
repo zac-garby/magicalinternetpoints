@@ -1,6 +1,6 @@
 section#home {
     display: grid;
-    grid-template-columns: 60% auto;
+    grid-template-columns: 50% auto;
     column-gap: 20px;
     font-size: 14pt;
 }
@@ -13,7 +13,6 @@ div.point-subtotals {
 div.point-source {
     display: flex;
     justify-content: space-between;
-    align-items: center;
     padding: 10px;
     margin-bottom: 10px;
 }
@@ -30,6 +29,19 @@ div.source span.name {
 div.source span.description, div.source span.username {
     color: #777;
     font-size: 12pt;
+}
+
+div.source span.description {
+    font-size: 10pt;
+    font-style: italic;
+}
+
+div.source span.description::before {
+    content: "(";
+}
+
+div.source span.description::after {
+    content: ")";
 }
 
 span.point-subtotal {

@@ -6,30 +6,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>magicalinternetpoints</title>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com"> 
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin> 
-    <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,700;0,900;1,400&display=swap" rel="stylesheet">
-
     <link rel="stylesheet" href="/static/css/main.css">
     <link rel="stylesheet" href="/static/css/index.css">
-
-    <script src="/static/js/global.js"></script>
-    <script src="/static/js/index.js"></script>
 </head>
-<body onload="onload()">
+<body>
     <div class="wrapper">
         <header>
             <h1><a href="/" class="home-link">magical<span class="bolder">internet</span>points</a></h1>
-            <h1 class="points-total">5,371 points</h1>
+            <h1 class="points-total">3,626</h1>
         </header>
-        <section id="home" class="hidden">
+        <section id="home">
             <div>
-                <p>Hello <strong id="username">username</strong>!</p>
-                <p>You currently have <span class="bolder red">5,371</span> magical internet points, which means absolutely nothing but well done you :)</p>
+                <p>hello <strong id="username">{{.User.Username}}</strong>!</p>
+                <p>you currently have <span class="bolder red">3,626</span> magical internet points, which means absolutely nothing but well done you :)</p>
                 <ul class="links">
-                    <li><a href="#" onclick="logout()">Log Out</a></li>
-                    <li><a href="#">Get a Badge</a></li>
-                    <li><a href="#">Exchange Rates</a></li>
+                    <li><a href="/logout">log out</a></li>
+                    <li><a href="#">badge</a></li>
+                    <li><a href="#">exchange rates</a></li>
                 </ul>
             </div>
             <div class="point-subtotals">
@@ -39,7 +32,7 @@
                         <span class="username">zac-garby</span>
                         <span class="description">Stars & Followers</span>
                     </div>
-                    <span class="point-subtotal bolder red">1,053 points</span>
+                    <span class="point-subtotal bolder red">1,053</span>
                 </div>
                 <div class="point-source">
                     <div class="source">
@@ -47,7 +40,7 @@
                         <span class="username">zacgarby</span>
                         <span class="description">Total karma</span>
                     </div>
-                    <span class="point-subtotal bolder red">2,573 points</span>
+                    <span class="point-subtotal bolder red">2,573</span>
                 </div>
             </div>
         </section>

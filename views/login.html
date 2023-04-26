@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>magicalinternetpoints - login</title>
+
+    <link rel="stylesheet" href="/static/css/main.css">
+    <link rel="stylesheet" href="/static/css/login.css">
+</head>
+<body>
+    <div class="wrapper">
+        <header>
+            <h1><a href="/" class="home-link">magical<span class="bolder">internet</span>points</a></h1>
+        </header>
+        <section id="login">
+            <div>
+                <form id="login-form" action="/login" method="POST">
+                    <h2>log in</h2>
+
+                    <label for="email">email</label>
+                    <input type="email" name="email">
+
+                    <label for="password">password</label>
+                    <input type="password" name="password">
+
+                    <input type="submit" value="log in">
+                </form>
+            </div>
+            <div>
+                <form id="register-form" action="/register" method="POST">
+                    <h2>register</h2>
+
+                    <label for="username">username</label>
+                    <input type="text" name="username">
+
+                    <label for="email">email</label>
+                    <input type="email" name="email">
+
+                    <label for="password">password</label>
+                    <input type="password" name="password">
+
+                    <input type="submit" value="register">
+                </form>
+            </div>
+        </section>
+        <p id="error"></p>
+    </div>
+</body>
+</html>

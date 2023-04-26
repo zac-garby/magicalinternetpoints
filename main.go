@@ -2,64 +2,59 @@ package main
 
 import (
 	"log"
-	"math/rand"
-	"net/http"
-	"time"
 
-	"github.com/gorilla/mux"
-	"github.com/zac-garby/magicalinternetpoints/api"
-	"golang.org/x/crypto/acme/autocert"
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/session"
+	"github.com/gofiber/storage/sqlite3"
+	"github.com/gofiber/template/html"
+
+	"github.com/zac-garby/magicalinternetpoints/lib"
 )
 
 func main() {
-	rand.Seed(time.Now().Unix())
-
-	serv, m := makeHTTPSServer()
-
-	log.Println("listening on :80")
-	go http.ListenAndServe(":80", m.HTTPHandler(nil))
-
-	log.Println("listening on :443")
-	if err := serv.ListenAndServeTLS("", ""); err != nil {
-		log.Fatalf("ListenAndServeTLS() failed with %s\n", err)
-	}
-}
-
-func makeHTTPSServer() (*http.Server, *autocert.Manager) {
-	m := &autocert.Manager{
-		Prompt:     autocert.AcceptTOS,
-		HostPolicy: autocert.HostWhitelist("magicalinternetpoints.com", "www.magicalinternetpoints.com"),
-		Cache:      autocert.DirCache("secret"),
-	}
-
-	serv := &http.Server{
-		ReadTimeout:  5 * time.Second,
-		WriteTimeout: 5 * time.Second,
-		IdleTimeout:  120 * time.Second,
-		Handler:      makeRouter(),
-		Addr:         ":443",
-		TLSConfig:    m.TLSConfig(),
-	}
-
-	return serv, m
-}
-
-func makeRouter() *mux.Router {
-	r := mux.NewRouter()
-
-	if err := api.RegisterAPI(r); err != nil {
-		log.Fatalf("could not create API. %s", err)
-	}
-
-	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./static/"))))
-
-	r.Path("/login").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "./static/login.html")
+	storage := sqlite3.New(sqlite3.Config{
+		Database: "magicalinternetpoints.sqlite3",
 	})
 
-	r.Path("/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "./static/index.html")
+	sessions := session.New(session.Config{
+		Storage: storage,
 	})
 
-	return r
+	backend := lib.Backend{
+		Storage:  storage,
+		Sessions: sessions,
+	}
+
+	app := fiber.New(fiber.Config{
+		Views: html.New("./views", ".html"),
+	})
+
+	// static content
+	app.Static("/static", "./static")
+
+	// GET handlers
+	app.Get("/", func(c *fiber.Ctx) error {
+		user, err := backend.CurrentUser(c)
+
+		if err != nil {
+			return c.Render("welcome", fiber.Map{})
+		} else {
+			return c.Render("index", fiber.Map{
+				"User": user,
+			})
+		}
+	})
+
+	app.Get("/login", func(c *fiber.Ctx) error {
+		return c.Render("login", fiber.Map{})
+	})
+
+	app.Get("/logout", backend.AuthLogoutHandler)
+
+	// POST handlers
+	app.Post("/login", backend.AuthLoginHandler)
+	app.Post("/register", backend.AuthRegisterHandler)
+	app.Post("/logout", backend.AuthLogoutHandler)
+
+	log.Fatal(app.Listen(":3000"))
 }

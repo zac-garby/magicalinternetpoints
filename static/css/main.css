@@ -5,11 +5,11 @@ html, body {
 
 * {
     box-sizing: border-box;
-    font-family: 'Lato', sans-serif;
+    font-family: Menlo, Consolas, Monaco, Liberation Mono, Lucida Console, monospace;
 }
 
 div.wrapper {
-    width: 1000px;
+    width: 700px;
     margin: auto;
     margin-top: 100px;
     left: 0;
@@ -17,13 +17,14 @@ div.wrapper {
 }
 
 header {
-    background-color: #88251e;
+    background-color: rgb(235, 218, 196);
+    height: 80px;
     padding: 20px;
-    color: #f0f0f0;
     font-weight: bold;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    color: #720a2b;
 }
 
 header h1 {
@@ -31,12 +32,11 @@ header h1 {
 }
 
 header h1.points-total {
-    background-color: #f0f0f0;
-    color: #88251e;
+    color: #5f3309;
     padding: 5px;
     padding-left: 10px;
     padding-right: 10px;
-    border-radius: 10px;
+    text-decoration: underline;
 }
 
 section {
@@ -50,7 +50,7 @@ ul.links {
 
 ul.links li::before {
     content: ">";
-    color: #88251e;
+    color: #8e1038;
     font-weight: bolder;
     margin-right: 10px;
 }
@@ -64,16 +64,16 @@ span.bolder {
 }
 
 span.red {
-    color: #88251e;
+    color: #8e1038;
 }
 
 a {
-    color: #88251e;
+    color: #8e1038;
     font-style: italic;
 }
 
 a.home-link {
-    color: #f0f0f0;
+    color: #5f3309;
     font-style: normal;
     text-decoration: none;
 }
@@ -83,7 +83,7 @@ a.home-link {
 }
 
 p#error {
-    color: #88251e;
+    color: #8e1038;
     font-weight: bold;
     font-size: 18pt;
     text-align: center;
