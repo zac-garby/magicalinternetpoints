@@ -1,6 +1,7 @@
 package backend
 
 import (
+	"database/sql"
 	"fmt"
 	"time"
 
@@ -146,44 +147,39 @@ func (b *Backend) LookupUsername(username string) (*common.User, error) {
 	return user, nil
 }
 
-func (b *Backend) LookupAccounts(userID int) ([]*common.Account, error) {
+func (b *Backend) LookupAccount(userID int, siteTitle string) (*common.Account, error) {
 	stmt, err := b.Storage.Conn().Prepare(`
-		SELECT accounts.site_id, accounts.username, accounts.profile_url,
-		       sites.title, sites.url, sites.score_description
+		SELECT accounts.site_id, accounts.username, accounts.profile_url
 		FROM accounts
 		INNER JOIN sites ON accounts.site_id = sites.id
-		WHERE accounts.user_id = ?
+		WHERE accounts.user_id = ? AND sites.title = ?
 	`)
 	if err != nil {
 		panic(err)
 	}
 	defer stmt.Close()
 
-	rows, err := stmt.Query(userID)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
+	row := stmt.QueryRow(userID, siteTitle)
 
-	var accounts []*common.Account
-	for rows.Next() {
-		account := new(common.Account)
-		site := new(common.Site)
-		if err = rows.Scan(
-			&site.ID, &account.Username, &account.ProfileURL,
-			&site.Title, &site.URL, &site.ScoreDescription,
-		); err != nil {
-			return nil, err
+	account := new(common.Account)
+	var siteID int
+	if err = row.Scan(
+		&siteID, &account.Username, &account.ProfileURL,
+	); err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
 		}
-		account.Site = site
-		accounts = append(accounts, account)
-	}
-
-	if err = rows.Err(); err != nil {
 		return nil, err
 	}
 
-	return accounts, nil
+	site, ok := b.Sites[siteID]
+	if !ok {
+		return nil, fmt.Errorf("no site found with ID %d", siteID)
+	}
+
+	account.Site = site
+
+	return account, nil
 }
 
 func (b *Backend) CreateUser(u common.User) error {

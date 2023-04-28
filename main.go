@@ -61,12 +61,13 @@ func main() {
 	})
 
 	app.Get("/logout", backend.AuthLogoutHandler)
+	app.Get("/update/:sitename", withUser(backend, backend.UpdateHandler))
 
 	// POST handlers
 	app.Post("/login", backend.AuthLoginHandler)
 	app.Post("/register", backend.AuthRegisterHandler)
 	app.Post("/logout", backend.AuthLogoutHandler)
-	app.Post("/update/:sitename", backend.UpdateHandler)
+	app.Post("/update/:sitename", withUser(backend, backend.UpdateHandler))
 
 	log.Fatal(app.Listen(":3000"))
 }
