@@ -62,7 +62,7 @@ func (b *Backend) AuthRegisterHandler(c *fiber.Ctx) error {
 	}
 
 	// lookup username
-	if _, err := b.LookupUsername(email); err == nil {
+	if _, err := b.LookupUsername(username); err == nil {
 		return fmt.Errorf("user already exists with this username")
 	}
 
