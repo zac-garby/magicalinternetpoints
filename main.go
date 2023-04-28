@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"log"
 
 	"github.com/gofiber/fiber/v2"
@@ -22,6 +23,29 @@ func main() {
 
 	app := fiber.New(fiber.Config{
 		Views: html.New("./views", ".html"),
+
+		ErrorHandler: func(c *fiber.Ctx, err error) error {
+			// Status code defaults to 500
+			code := fiber.StatusInternalServerError
+
+			// Retrieve the custom status code if it's a *fiber.Error
+			var e *fiber.Error
+			if errors.As(err, &e) {
+				code = e.Code
+			}
+
+			err = c.Render("error", fiber.Map{
+				"Code":    code,
+				"Message": err.Error(),
+			})
+
+			if err != nil {
+				// In case the SendFile fails
+				return c.Status(fiber.StatusInternalServerError).SendString("Internal Server Error")
+			}
+
+			return nil
+		},
 	})
 
 	// static content

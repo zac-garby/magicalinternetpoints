@@ -1,0 +1,8 @@
+p.error {
+    color: red;
+    font-weight: bold;
+}
+
+strong.code {
+    color: red;
+}
