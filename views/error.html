@@ -16,10 +16,16 @@
         </header>
         <section id="error">
             <p>
-                <strong>whoa there!</strong> looks like you got yourself a <strong class="code">{{ .Code }} ERROR!</strong>
+                <strong>whoa there!</strong>
+            </p>
+            <p>
+                looks like you got yourself a code <strong class="code">{{ .Code }}</strong>...
+            </p>
+            <p>
+                <strong>-100 magical internet points to you!</strong> (not really <span class="small">(maybe)</span>)
             </p>
             <p class="error">
-                {{ .Message }}
+                ({{ .Message }})
             </p>
         </section>
     </div>

@@ -6,3 +6,7 @@ p.error {
 strong.code {
     color: red;
 }
+
+span.small {
+    font-size: 8pt;
+}
