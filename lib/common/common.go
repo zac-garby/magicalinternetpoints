@@ -39,6 +39,7 @@ type Points struct {
 	Source      *PointSource
 	LastUpdated uint64
 	Raw         int
+	Real        int
 }
 
 type AccountPoints struct {

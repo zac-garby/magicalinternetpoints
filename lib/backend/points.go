@@ -3,6 +3,7 @@ package backend
 import (
 	"database/sql"
 	"fmt"
+	"math"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -79,6 +80,8 @@ func (b *Backend) UpdatePoints(userID int, siteName string, sources map[string]i
 			return fmt.Errorf("source not found: %s", sourceName)
 		}
 
+		realPoints := CalculateRealPoints(points, b.Sources[sourceID])
+
 		// Check if the user already has points for this source.
 		var currentPoints int
 		err = tx.QueryRow(`
@@ -93,18 +96,18 @@ func (b *Backend) UpdatePoints(userID int, siteName string, sources map[string]i
 		if err == sql.ErrNoRows {
 			// If the user doesn't have points for this source yet, insert a new row.
 			_, err = tx.Exec(`
-				INSERT INTO raw_points (user_id, point_source_id, point_total, last_updated_date)
+				INSERT INTO raw_points (user_id, point_source_id, point_total, real_points, last_updated_date)
 				VALUES (?, ?, ?, ?)
-			`, userID, sourceID, points, time.Now().Unix())
+			`, userID, sourceID, points, realPoints, time.Now().Unix())
 			if err != nil {
 				return err
 			}
 		} else {
 			// If the user already has points for this source, update the row.
 			_, err = tx.Exec(`
-				UPDATE raw_points SET point_total = ?, last_updated_date = ?
+				UPDATE raw_points SET point_total = ?, real_points = ?, last_updated_date = ?
 				WHERE user_id = ? AND point_source_id = ?
-			`, points, time.Now().Unix(), userID, sourceID)
+			`, points, realPoints, time.Now().Unix(), userID, sourceID)
 			if err != nil {
 				return err
 			}
@@ -163,7 +166,7 @@ func (b *Backend) GetRawPoints(userID int) ([]*common.AccountPoints, error) {
 
 func (b *Backend) getSourcesForAccount(userID int, account *common.Account) ([]*common.Points, error) {
 	rows, err := b.Storage.Conn().Query(`
-		SELECT point_source_id, point_total, last_updated_date
+		SELECT point_source_id, point_total, real_points, last_updated_date
 		FROM raw_points
 		INNER JOIN point_sources ON point_sources.id = raw_points.point_source_id
 		WHERE user_id = ? AND point_sources.site_id = ?
@@ -177,7 +180,7 @@ func (b *Backend) getSourcesForAccount(userID int, account *common.Account) ([]*
 	for rows.Next() {
 		point := &common.Points{}
 		var sourceID int
-		if err := rows.Scan(&sourceID, &point.Raw, &point.LastUpdated); err != nil {
+		if err := rows.Scan(&sourceID, &point.Raw, &point.Real, &point.LastUpdated); err != nil {
 			return nil, err
 		}
 
@@ -196,4 +199,29 @@ func (b *Backend) getSourcesForAccount(userID int, account *common.Account) ([]*
 	}
 
 	return points, nil
+}
+
+func CalculateRealPoints(raw int, source *common.PointSource) int {
+	var low, medium, high int
+
+	if raw > source.MediumUpper {
+		// high
+		low = source.LowUpper
+		medium = source.MediumUpper - source.LowUpper
+		high = raw - source.MediumUpper
+	} else if raw > source.LowUpper {
+		// medium
+		low = source.LowUpper
+		medium = raw - source.LowUpper
+		high = 0
+	} else {
+		// low
+		low = raw
+		medium = 0
+		high = 0
+	}
+
+	return int(math.Round(float64(low)*source.LowRate +
+		float64(medium)*source.MediumRate +
+		float64(high)*source.HighRate))
 }
