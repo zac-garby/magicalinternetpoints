@@ -31,7 +31,7 @@ div.specifics span.name {
 
 div.specifics span.description, div.specifics span.username {
     color: #777;
-    font-size: 12pt;
+    font-size: 10pt;
 }
 
 div.specifics span.description {
@@ -45,10 +45,6 @@ div.specifics span.description::before {
 
 div.specifics span.description::after {
     content: ")";
-}
-
-span.point-subtotal {
-    font-size: 18pt;
 }
 
 tr.source td {

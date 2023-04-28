@@ -16,14 +16,19 @@
             <h1 class="points-total">3,626⟐</h1>
         </header>
         <section id="home">
-            <div>
+            <div class="main-text">
                 <p>hello <strong id="username">{{.User.Username}}</strong>!</p>
-                <p>you currently have <span class="bolder red">3,626⟐</span> magical internet points, which means absolutely nothing but well done you :)</p>
+                <p>
+                    you currently have <span class="bolder red">3,626⟐</span> magical internet points, which means absolutely nothing but well done you :)
+                </p>
                 <ul class="links">
                     <li><a href="/logout">log out</a></li>
                     <li><a href="#">badge</a></li>
                     <li><a href="#">exchange rates</a></li>
                 </ul>
+                <p>
+                    your point totals for each site are shown to the right, along with how they're derived from site-specific scores.
+                </p>
             </div>
             <div class="sites">
                 {{ range .Sources }}

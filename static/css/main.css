@@ -83,3 +83,7 @@ p#error {
     font-size: 18pt;
     text-align: center;
 }
+
+div.main-text p {
+    text-align: justify;
+}
