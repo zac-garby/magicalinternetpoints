@@ -5,6 +5,7 @@ import (
 	"log"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/monitor"
 	"github.com/gofiber/storage/sqlite3"
 	"github.com/gofiber/template/html"
 
@@ -43,6 +44,10 @@ func main() {
 		})
 	}))
 
+	app.Get("/metrics", monitor.New(monitor.Config{
+		Title: "Magical Internet Points Metrics",
+	}))
+
 	app.Get("/login", func(c *fiber.Ctx) error {
 		return c.Render("login", fiber.Map{})
 	})
@@ -61,6 +66,7 @@ func main() {
 	app.Post("/login", backend.AuthLoginHandler)
 	app.Post("/register", backend.AuthRegisterHandler)
 	app.Post("/logout", backend.AuthLogoutHandler)
+	app.Post("/update/:sitename", backend.UpdateHandler)
 
 	log.Fatal(app.Listen(":3000"))
 }
