@@ -55,6 +55,10 @@ func main() {
 		return c.Render("login", fiber.Map{})
 	})
 
+	app.Get("/about", func(c *fiber.Ctx) error {
+		return c.Render("about", fiber.Map{})
+	})
+
 	app.Get("/logout", backend.AuthLogoutHandler)
 
 	// POST handlers

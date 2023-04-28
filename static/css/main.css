@@ -1,6 +1,6 @@
 html, body {
     background-color: rgb(235, 218, 196);
-    color: #0f0f0f;
+    color: #301d16;
 }
 
 * {
@@ -40,6 +40,12 @@ header h1.points-total {
 
 section {
     padding: 20px;
+}
+
+section#home, section#welcome {
+    display: grid;
+    grid-template-columns: 50% auto;
+    column-gap: 20px;
 }
 
 ul.links {
