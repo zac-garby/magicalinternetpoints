@@ -2,52 +2,60 @@ section#home {
     display: grid;
     grid-template-columns: 50% auto;
     column-gap: 20px;
-    font-size: 14pt;
 }
 
-div.point-subtotals {
+div.sites {
     height: 500px;
     overflow-y: auto;
 }
 
-div.point-source {
+div.site {
     display: flex;
     justify-content: space-between;
     padding: 10px;
     margin-bottom: 10px;
 }
 
-div.point-source:first-child {
+div.site:first-child {
     padding-top: 0;
 }
 
-div.source {
+div.specifics {
     display: flex;
     flex-direction: column;
 }
 
-div.source span.name {
+div.specifics span.name {
     font-weight: bolder;
 }
 
-div.source span.description, div.source span.username {
+div.specifics span.description, div.specifics span.username {
     color: #777;
     font-size: 12pt;
 }
 
-div.source span.description {
+div.specifics span.description {
     font-size: 10pt;
     font-style: italic;
 }
 
-div.source span.description::before {
+div.specifics span.description::before {
     content: "(";
 }
 
-div.source span.description::after {
+div.specifics span.description::after {
     content: ")";
 }
 
 span.point-subtotal {
     font-size: 18pt;
+}
+
+td.source-name, td.source-points {
+    font-size: 10pt;
+    padding-right: 15px;
+}
+
+td.source-points {
+    font-weight: bold;
 }

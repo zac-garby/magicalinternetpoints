@@ -78,10 +78,6 @@ a.home-link {
     text-decoration: none;
 }
 
-.hidden {
-    display: none !important;
-}
-
 p#error {
     color: #8e1038;
     font-weight: bold;

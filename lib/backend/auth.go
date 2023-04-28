@@ -1,10 +1,11 @@
-package lib
+package backend
 
 import (
 	"fmt"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/zac-garby/magicalinternetpoints/lib/common"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -71,7 +72,7 @@ func (b *Backend) AuthRegisterHandler(c *fiber.Ctx) error {
 		panic(err)
 	}
 
-	user := User{
+	user := common.User{
 		Email:        email,
 		Username:     username,
 		PasswordHash: hash,
@@ -94,7 +95,7 @@ func (b *Backend) AuthLogoutHandler(c *fiber.Ctx) error {
 	return c.Redirect("/")
 }
 
-func (b *Backend) LookupUserID(id int) (*User, error) {
+func (b *Backend) LookupUserID(id int) (*common.User, error) {
 	stmt, err := b.Storage.Conn().Prepare("SELECT id, email, username, password_hash FROM users WHERE id = ?")
 	if err != nil {
 		panic(err)
@@ -102,7 +103,7 @@ func (b *Backend) LookupUserID(id int) (*User, error) {
 	defer stmt.Close()
 
 	row := stmt.QueryRow(id)
-	user := new(User)
+	user := new(common.User)
 
 	if err = row.Scan(&user.ID, &user.Email, &user.Username, &user.PasswordHash); err != nil {
 		return nil, err
@@ -111,7 +112,7 @@ func (b *Backend) LookupUserID(id int) (*User, error) {
 	return user, nil
 }
 
-func (b *Backend) LookupEmail(email string) (*User, error) {
+func (b *Backend) LookupEmail(email string) (*common.User, error) {
 	stmt, err := b.Storage.Conn().Prepare("SELECT id, email, username, password_hash FROM users WHERE email = ?")
 	if err != nil {
 		panic(err)
@@ -119,7 +120,7 @@ func (b *Backend) LookupEmail(email string) (*User, error) {
 	defer stmt.Close()
 
 	row := stmt.QueryRow(email)
-	user := new(User)
+	user := new(common.User)
 
 	if err = row.Scan(&user.ID, &user.Email, &user.Username, &user.PasswordHash); err != nil {
 		return nil, err
@@ -128,7 +129,7 @@ func (b *Backend) LookupEmail(email string) (*User, error) {
 	return user, nil
 }
 
-func (b *Backend) LookupUsername(username string) (*User, error) {
+func (b *Backend) LookupUsername(username string) (*common.User, error) {
 	stmt, err := b.Storage.Conn().Prepare("SELECT id, email, username, password_hash FROM users WHERE username = ?")
 	if err != nil {
 		panic(err)
@@ -136,7 +137,7 @@ func (b *Backend) LookupUsername(username string) (*User, error) {
 	defer stmt.Close()
 
 	row := stmt.QueryRow(username)
-	user := new(User)
+	user := new(common.User)
 
 	if err = row.Scan(&user.ID, &user.Email, &user.Username, &user.PasswordHash); err != nil {
 		return nil, err
@@ -145,7 +146,7 @@ func (b *Backend) LookupUsername(username string) (*User, error) {
 	return user, nil
 }
 
-func (b *Backend) LookupAccounts(userID int) ([]*Account, error) {
+func (b *Backend) LookupAccounts(userID int) ([]*common.Account, error) {
 	stmt, err := b.Storage.Conn().Prepare(`
 		SELECT accounts.site_id, accounts.username, accounts.profile_url,
 		       sites.title, sites.url, sites.score_description
@@ -164,17 +165,17 @@ func (b *Backend) LookupAccounts(userID int) ([]*Account, error) {
 	}
 	defer rows.Close()
 
-	var accounts []*Account
+	var accounts []*common.Account
 	for rows.Next() {
-		account := new(Account)
-		site := new(Site)
+		account := new(common.Account)
+		site := new(common.Site)
 		if err = rows.Scan(
 			&site.ID, &account.Username, &account.ProfileURL,
 			&site.Title, &site.URL, &site.ScoreDescription,
 		); err != nil {
 			return nil, err
 		}
-		account.Site = *site
+		account.Site = site
 		accounts = append(accounts, account)
 	}
 
@@ -185,7 +186,7 @@ func (b *Backend) LookupAccounts(userID int) ([]*Account, error) {
 	return accounts, nil
 }
 
-func (b *Backend) CreateUser(u User) error {
+func (b *Backend) CreateUser(u common.User) error {
 	// Get a reference to the underlying *sql.DB object
 	db := b.Storage.Conn()
 
@@ -209,7 +210,7 @@ func (b *Backend) CreateUser(u User) error {
 	return nil
 }
 
-func (b *Backend) BeginSession(user *User, c *fiber.Ctx) error {
+func (b *Backend) BeginSession(user *common.User, c *fiber.Ctx) error {
 	sess, err := b.Sessions.Get(c)
 	if err != nil {
 		return err
@@ -236,7 +237,7 @@ func (b *Backend) EndSession(c *fiber.Ctx) error {
 	return sess.Destroy()
 }
 
-func (b *Backend) CurrentUser(c *fiber.Ctx) (*User, error) {
+func (b *Backend) CurrentUser(c *fiber.Ctx) (*common.User, error) {
 	sess, err := b.Sessions.Get(c)
 	if err != nil {
 		return nil, err

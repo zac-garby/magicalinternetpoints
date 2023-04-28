@@ -4,11 +4,10 @@ import (
 	"log"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/session"
 	"github.com/gofiber/storage/sqlite3"
 	"github.com/gofiber/template/html"
 
-	"github.com/zac-garby/magicalinternetpoints/lib"
+	"github.com/zac-garby/magicalinternetpoints/lib/backend"
 )
 
 func main() {
@@ -16,13 +15,9 @@ func main() {
 		Database: "magicalinternetpoints.sqlite3",
 	})
 
-	sessions := session.New(session.Config{
-		Storage: storage,
-	})
-
-	backend := lib.Backend{
-		Storage:  storage,
-		Sessions: sessions,
+	backend, err := backend.New(storage)
+	if err != nil {
+		panic(err)
 	}
 
 	app := fiber.New(fiber.Config{
@@ -39,14 +34,19 @@ func main() {
 		if err != nil {
 			return c.Render("welcome", fiber.Map{})
 		} else {
-			accounts, err := backend.LookupAccounts(user.ID)
+			// accounts, err := backend.LookupAccounts(user.ID)
+			// if err != nil {
+			// 	panic(err)
+			// }
+
+			sources, err := backend.GetRawPoints(user.ID)
 			if err != nil {
-				panic(err)
+				return err
 			}
 
 			return c.Render("index", fiber.Map{
-				"User":     user,
-				"Accounts": accounts,
+				"User":    user,
+				"Sources": sources,
 			})
 		}
 	})

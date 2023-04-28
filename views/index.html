@@ -25,13 +25,24 @@
                     <li><a href="#">exchange rates</a></li>
                 </ul>
             </div>
-            <div class="point-subtotals">
-                {{ range .Accounts }}
-                <div class="point-source">
-                    <div class="source">
-                        <span class="name"><a href="{{ .ProfileURL }}" target="_blank">{{ .Site.Title }}</a></span>
-                        <span class="username">{{ .Username }}</span>
-                        <span class="description">{{ .Site.ScoreDescription }}</span>
+            <div class="sites">
+                {{ range .Sources }}
+                <div class="site">
+                    <div class="specifics">
+                        <span class="name"><a href="{{ .Account.ProfileURL }}" target="_blank">{{ .Account.Site.Title }}</a></span>
+                        <span class="username">{{ .Account.Username }}</span>
+                        <table class="sources">
+                        {{ range .Points }}
+                            <tr class="source" title="{{ .Source.Description }}">
+                                <td class="source-name">{{ .Source.Name }}</td>
+                                <td class="source-points">{{ .Raw }}</td>
+                            </tr>
+                        {{ else }}
+                            <tr class="source" title="no point sources for this site. either they haven't been scraped yet, or something else is going on">
+                                <td class="source-name">no sources</td>
+                            </tr>
+                        {{ end }}
+                        </table>
                     </div>
                     <span class="point-subtotal bolder red">1,053⟐</span>
                 </div>
