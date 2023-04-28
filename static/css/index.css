@@ -63,3 +63,11 @@ td.source-raw {
 td.source-points::after {
     content: "⟐";
 }
+
+a.update {
+    font-size: 10pt;
+    color: #0f0f0f;
+    text-decoration: underline;
+    text-decoration-style: dotted;
+    font-weight: normal;
+}

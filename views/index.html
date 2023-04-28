@@ -34,7 +34,10 @@
                 {{ range .Sources }}
                 <div class="site">
                     <div class="specifics">
-                        <span class="name"><a href="{{ .Account.ProfileURL }}" target="_blank">{{ .Account.Site.Title }}</a></span>
+                        <span class="name">
+                            <a href="{{ .Account.ProfileURL }}" target="_blank">{{ .Account.Site.Title }}</a>
+                            <a href="#" class="update">(update)</a>
+                        </span>
                         <span class="username">{{ .Account.Username }}</span>
                         <table class="sources">
                         {{ range .Points }}
@@ -46,6 +49,7 @@
                             </tr>
                         {{ else }}
                             <tr class="source" title="no point sources for this site. either they haven't been scraped yet, or something else is going on">
+                                <td></td>
                                 <td class="source-name">no sources</td>
                             </tr>
                         {{ end }}
