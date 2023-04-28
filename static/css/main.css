@@ -30,6 +30,10 @@ header h1 {
     margin: 0;
 }
 
+h1:first-child {
+    margin-top: 0;
+}
+
 header h1.points-total {
     color: #5f3309;
     padding: 5px;
@@ -88,4 +92,15 @@ p#error {
     font-weight: bold;
     font-size: 18pt;
     text-align: center;
+}
+
+div.eg {
+    padding: 10px;
+    margin-left: 15px;
+    background-color: rgb(215, 198, 176);
+}
+
+div.eg > *:first-child::before {
+    content: "e.g.";
+    font-weight: bold;
 }

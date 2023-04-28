@@ -1,0 +1,21 @@
+table#rates {
+    font-size: 10pt;
+    border-spacing: 10px 0px;
+}
+
+td.rate {
+    font-weight: bold;
+}
+
+td.bound {
+    text-align: right;
+}
+
+td.site-title {
+    padding-top: 15px;
+}
+
+thead {
+    color: #58372c;
+    font-size: 9pt;
+}

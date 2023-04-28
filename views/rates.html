@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>magicalinternetpoints - rates</title>
+
+    <link rel="stylesheet" href="/static/css/main.css">
+    <link rel="stylesheet" href="/static/css/rates.css">
+</head>
+<body>
+    <div class="wrapper">
+        <header>
+            <h1><a href="/" class="home-link">magical<span class="bolder">internet</span>points</a></h1>
+            <h1 class="points-total">3,626⟐</h1>
+        </header>
+        <section id="rates">
+            <h1>exchange rates</h1>
+
+            <p>
+                here are the up-to-date exchange rates for all magical internet point sources.
+            </p>
+
+            <table id="rates">
+                <thead>
+                    <td></td>
+                    <td class="bound">low</td>
+                    <td class="rate">(rate)</td>
+                    <td class="bound">medium</td>
+                    <td class="rate">(rate)</td>
+                    <td class="bound">high</td>
+                    <td class="rate">(rate)</td>
+                </thead>
+            {{ range .Sites }}
+                <tr class="site-header">
+                    <td class="site-title">
+                        <a href="{{ .URL }}">{{ .Title }}</a>
+                    </td>
+                </tr>
+                {{ range .Sources }}
+                <tr class="site-source" title="{{ .Description }}">
+                    <td class="source-name">{{ .Name }}</td>
+                    <td class="bound">&leq;{{ .LowUpper }}:</td>
+                    <td class="rate">{{ .LowRate }}&times;</td>
+                    <td class="bound">&leq;{{ .MediumUpper }}:</td>
+                    <td class="rate">{{ .MediumRate }}&times;</td>
+                    <td class="bound">&gt;{{ .MediumUpper }}:</td>
+                    <td class="rate">{{ .HighRate }}&times;</td>
+                </tr>
+                {{ end }}
+                <tr></tr>
+            {{ end }}
+            </table>
+
+            <h2>what do these mean?</h2>
+
+            <p>
+                for some point source (e.g. <stong>stars</stong>), there are the classes into which points can fall: <em>low</em>, <em>medium</em>, and <em>high</em>.
+            </p>
+            <p>
+                if <em>low</em> is 50, for example, the first 50 of your "raw" points for that source (e.g. the first 50 stars) will be multiplied by the corresponding <em>low rate</em> for that source.
+            </p>
+            <p>
+                if, then, <em>medium</em> was 150, the next 100 of your stars would be multiplied by the corresponding <em>medium rate</em>, and so on.
+            </p>
+            <p>
+                the high rate applies to any raw points for a source exceeding the <em>medium</em> cap.
+            </p>
+        </section>
+    </div>
+</body>
+</html>

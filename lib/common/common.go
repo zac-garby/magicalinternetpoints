@@ -12,6 +12,7 @@ type Site struct {
 	Title            string
 	URL              string
 	ScoreDescription string
+	Sources          []*PointSource
 }
 
 type Account struct {
@@ -24,7 +25,14 @@ type PointSource struct {
 	ID          int
 	Name        string
 	Description string
-	Site        *Site
+
+	LowUpper    int
+	MediumUpper int
+	LowRate     float64
+	MediumRate  float64
+	HighRate    float64
+
+	Site *Site
 }
 
 type Points struct {

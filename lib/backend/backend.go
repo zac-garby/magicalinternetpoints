@@ -60,6 +60,8 @@ func (b *Backend) LoadInitData() error {
 		if err := sitesRows.Scan(&site.ID, &site.Title, &site.URL, &site.ScoreDescription); err != nil {
 			return fmt.Errorf("failed to scan site row: %v", err)
 		}
+
+		site.Sources = make([]*common.PointSource, 0)
 		b.Sites[site.ID] = &site
 	}
 	if err := sitesRows.Err(); err != nil {
@@ -68,7 +70,10 @@ func (b *Backend) LoadInitData() error {
 
 	// Query to get all point sources
 	sourcesQuery := `
-        SELECT ps.id, ps.name, ps.description, ps.site_id
+        SELECT
+			ps.id, ps.name, ps.description, ps.site_id,
+			ps.low_upper, ps.medium_upper,
+			ps.low_rate, ps.medium_rate, ps.high_rate
         FROM point_sources AS ps
     `
 	sourcesRows, err := b.Storage.Conn().Query(sourcesQuery)
@@ -82,7 +87,10 @@ func (b *Backend) LoadInitData() error {
 	for sourcesRows.Next() {
 		var source common.PointSource
 		var siteID int
-		if err := sourcesRows.Scan(&source.ID, &source.Name, &source.Description, &siteID); err != nil {
+		if err := sourcesRows.Scan(
+			&source.ID, &source.Name, &source.Description, &siteID,
+			&source.LowUpper, &source.MediumUpper,
+			&source.LowRate, &source.MediumRate, &source.HighRate); err != nil {
 			return fmt.Errorf("failed to scan point source row: %v", err)
 		}
 		site, ok := b.Sites[siteID]
@@ -90,6 +98,7 @@ func (b *Backend) LoadInitData() error {
 			return fmt.Errorf("invalid site ID for point source %d: %d", source.ID, siteID)
 		}
 		source.Site = site
+		site.Sources = append(site.Sources, &source)
 		b.Sources[source.ID] = &source
 	}
 	if err := sourcesRows.Err(); err != nil {

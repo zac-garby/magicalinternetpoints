@@ -48,6 +48,12 @@ func main() {
 		Title: "Magical Internet Points Metrics",
 	}))
 
+	app.Get("/rates", func(c *fiber.Ctx) error {
+		return c.Render("rates", fiber.Map{
+			"Sites": backend.Sites,
+		})
+	})
+
 	app.Get("/login", func(c *fiber.Ctx) error {
 		return c.Render("login", fiber.Map{})
 	})
