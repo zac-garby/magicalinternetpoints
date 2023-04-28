@@ -23,7 +23,7 @@ type jsonGitHubUser struct {
 	Followers int `json:"followers"`
 }
 
-func (g *GitHub) GetScores(account *common.Account) (map[string]int, error) {
+func (g *GitHub) GetRawPoints(account *common.Account) (map[string]int, error) {
 	stars, err := g.getStars(account)
 	if err != nil {
 		return nil, fmt.Errorf("error getting github stars: %w", err)

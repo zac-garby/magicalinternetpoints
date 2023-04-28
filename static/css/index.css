@@ -51,11 +51,19 @@ span.point-subtotal {
     font-size: 18pt;
 }
 
-td.source-name, td.source-points {
+tr.source td {
     font-size: 10pt;
-    padding-right: 15px;
+    padding-right: 5px;
 }
 
-td.source-points {
+td.source-raw, td.source-points {
     font-weight: bold;
+}
+
+td.source-raw {
+    text-align: right;
+}
+
+td.source-points::after {
+    content: "⟐";
 }

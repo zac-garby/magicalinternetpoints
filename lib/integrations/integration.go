@@ -8,7 +8,7 @@ import (
 )
 
 type Integration interface {
-	GetScores(*common.Account) (map[string]int, error)
+	GetRawPoints(*common.Account) (map[string]int, error)
 }
 
 func getJson(url string, target interface{}) error {

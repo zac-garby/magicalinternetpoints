@@ -6,6 +6,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/session"
 	"github.com/gofiber/storage/sqlite3"
 	"github.com/zac-garby/magicalinternetpoints/lib/common"
+	"github.com/zac-garby/magicalinternetpoints/lib/integrations"
 )
 
 type Backend struct {
@@ -14,6 +15,8 @@ type Backend struct {
 
 	Sites   map[int]*common.Site
 	Sources map[int]*common.PointSource
+
+	Integrations map[string]integrations.Integration
 }
 
 func New(storage *sqlite3.Storage) (*Backend, error) {
@@ -24,6 +27,11 @@ func New(storage *sqlite3.Storage) (*Backend, error) {
 	backend := &Backend{
 		Storage:  storage,
 		Sessions: sessions,
+
+		Integrations: map[string]integrations.Integration{
+			"GitHub": &integrations.GitHub{},
+			"Reddit": &integrations.Reddit{},
+		},
 	}
 
 	if err := backend.LoadInitData(); err != nil {

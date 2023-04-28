@@ -34,8 +34,10 @@
                         <table class="sources">
                         {{ range .Points }}
                             <tr class="source" title="{{ .Source.Description }}">
+                                <td class="source-raw">{{ .Raw }}</td>
                                 <td class="source-name">{{ .Source.Name }}</td>
-                                <td class="source-points">{{ .Raw }}</td>
+                                <td class="source-mapsto">-></td>
+                                <td class="source-points">200</td>
                             </tr>
                         {{ else }}
                             <tr class="source" title="no point sources for this site. either they haven't been scraped yet, or something else is going on">

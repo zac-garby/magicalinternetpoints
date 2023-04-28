@@ -1,5 +1,5 @@
 html, body {
-    background-color: #f0f0f0;
+    background-color: rgb(235, 218, 196);
     color: #0f0f0f;
 }
 
@@ -17,7 +17,6 @@ div.wrapper {
 }
 
 header {
-    background-color: rgb(235, 218, 196);
     height: 80px;
     padding: 20px;
     font-weight: bold;
