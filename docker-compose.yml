@@ -1,0 +1,11 @@
+services:
+  mip:
+    image: golang
+    volumes:
+      - ./:/go-data
+      - ./pkgs:/go/pkg
+    command: go run .
+    working_dir: /go-data
+    ports:
+      -  3000:3000
+    restart: unless-stopped
