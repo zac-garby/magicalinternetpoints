@@ -13,13 +13,13 @@
     <div class="wrapper">
         <header>
             <h1><a href="/" class="home-link">magical<span class="bolder">internet</span>points</a></h1>
-            <h1 class="points-total">1000⟐</h1>
+            <h1 class="points-total">{{ .Total }}⟐</h1>
         </header>
         <section id="home">
             <div class="main-text">
                 <p>hello <strong id="username">{{.User.Username}}</strong>!</p>
                 <p>
-                    you currently have <span class="bolder red">1000⟐</span> magical internet points, which means absolutely nothing but well done you :)
+                    you currently have <span class="bolder red">{{ .Total }}⟐</span> magical internet points, which means absolutely nothing but well done you :)
                 </p>
                 <ul class="links">
                     <li><a href="/logout">log out</a></li>
@@ -36,43 +36,42 @@
             </div>
             <div class="sites">
                 {{ range .Sources }}
-                <div class="site">
-                    <div class="specifics">
-                        <span class="name">
-                            <a href="{{ .Account.ProfileURL }}" target="_blank">{{ .Account.Site.Title }}</a>
-                            <a href="/update/{{ .Account.Site.Title }}" class="update">(update)</a>
-                        </span>
-                        <span class="username">{{ .Account.Username }}</span>
-                        <table class="sources">
+                    <div class="site">
+                        <div class="site-name">
+                            <span class="name">
+                                <a href="{{ .Account.ProfileURL }}" target="_blank">{{ .Account.Site.Title }}</a>
+                                <a href="/update/{{ .Account.Site.Title }}" class="update">(update)</a>
+                            </span>
+                            <span class="point-subtotal bolder red">{{ .Total }}⟐</span>
+                        </div>
+                        <div class="username">
+                            {{ .Account.Username }}
+                        </div>
                         {{ range .Points }}
-                            <tr class="source" title="{{ .Source.Description }}">
-                                <td class="source-raw">{{ .Raw }}</td>
-                                <td class="source-name">{{ .Source.Name }}</td>
-                                <td class="source-mapsto">-></td>
-                                <td class="source-points">{{ .Real }}</td>
-                            </tr>
+                        <div class="source-row">
+                            <span class="source-raw">{{ .Raw }}</span>
+                            <span class="source-name">{{ .Source.Name }}</span>
+                            <span class="source-mapsto">-></span>
+                            <span class="source-points">{{ .Real }}</span>
+                        </div>
                         {{ else }}
-                            <tr class="source" title="no point sources for this site. either they haven't been scraped yet, or something else is going on">
-                                <td></td>
-                                <td class="source-name">no sources</td>
-                            </tr>
+                        <div class="no-sources-row">
+                            <span title="no point sources for this site. either they haven't been scraped yet, or something else is going on">no sources</span>
+                        </div>
                         {{ end }}
-                        </table>
                     </div>
-                    <span class="point-subtotal bolder red">?⟐</span>
-                </div>
                 {{ else }}
-                <div class="no-sources">
-                    <p>
-                        currently, you have not integrated with any sites!
-                    </p>
-                    <p>
-                        as a result, you have NO magical internet points. you should <a href="#">maybe do that</a>...
-                    </p>
-                    <p>
-                        in the meantime, feel free to browse the rest of this site (which will probably be fruitless until you add a point source).
-                    </p>
-                </div>
+                    <div class="no-sources">
+                        <p>
+                            currently, you have not integrated with any sites!
+                        </p>
+                        <p>
+                            as a result, you have NO magical internet points. you should <a href="#">maybe do that</a>...
+                        </p>
+                        <p>
+                            in the meantime, feel free to browse the rest of this site (which will probably be fruitless until you add a point source).
+                        </p>
+                    </div>
                 {{ end }}
             </div>
         </section>

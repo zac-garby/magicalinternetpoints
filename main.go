@@ -33,7 +33,7 @@ func main() {
 
 	// GET handlers
 	app.Get("/", withUser(backend, func(user *common.User, c *fiber.Ctx) error {
-		sources, err := backend.GetRawPoints(user.ID)
+		total, sources, err := backend.GetRawPoints(user.ID)
 		if err != nil {
 			return err
 		}
@@ -41,6 +41,7 @@ func main() {
 		return c.Render("index", fiber.Map{
 			"User":    user,
 			"Sources": sources,
+			"Total":   total,
 		})
 	}))
 

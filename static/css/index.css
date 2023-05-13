@@ -1,13 +1,11 @@
 div.sites {
-    height: 500px;
+    max-height: 500px;
     overflow-y: auto;
+    overflow-x: hidden;
 }
 
 div.site {
-    display: flex;
-    justify-content: space-between;
-    padding: 10px;
-    margin-bottom: 10px;
+    margin-bottom: 15px;
 }
 
 div.site:first-child {
@@ -19,43 +17,52 @@ div.specifics {
     flex-direction: column;
 }
 
-div.specifics span.name {
+div.site-name span.name {
     font-weight: bolder;
 }
 
-div.specifics span.description, div.specifics span.username {
-    color: #777;
-    font-size: 10pt;
+div.site-name {
+    display: grid;
+    grid-template-columns: auto auto;
 }
 
-div.specifics span.description {
-    font-size: 10pt;
-    font-style: italic;
-}
-
-div.specifics span.description::before {
-    content: "(";
-}
-
-div.specifics span.description::after {
-    content: ")";
-}
-
-tr.source td {
-    font-size: 10pt;
-    padding-right: 5px;
-}
-
-td.source-raw, td.source-points {
-    font-weight: bold;
-}
-
-td.source-raw {
+span.point-subtotal {
+    columns: -1;
     text-align: right;
 }
 
-td.source-points::after {
+div.username {
+    color: #777;
+    font-size: 10pt;
+    margin-bottom: 5px;
+}
+
+div.source-row {
+    font-size: 10pt;
+    display: grid;
+    grid-template-columns: 50px auto 20px 100px;
+    gap: 5px;
+}
+
+span.source-raw, span.source-points {
+    font-weight: bold;
+}
+
+span.source-raw {
+    text-align: right;
+}
+
+span.source-points {
+    text-align: right;
+}
+
+span.source-points::after {
     content: "⟐";
+}
+
+div.no-sources-row {
+    font-size: 10pt;
+    color: #777;
 }
 
 a.update {
@@ -64,4 +71,9 @@ a.update {
     text-decoration: underline;
     text-decoration-style: dotted;
     font-weight: normal;
+}
+
+div.no-sources {
+    font-size: 10pt;
+    color: #777;
 }

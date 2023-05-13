@@ -45,4 +45,5 @@ type Points struct {
 type AccountPoints struct {
 	Account *Account
 	Points  []*Points
+	Total   int
 }

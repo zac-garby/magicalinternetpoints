@@ -117,7 +117,7 @@ func (b *Backend) UpdatePoints(userID int, siteName string, sources map[string]i
 	return nil
 }
 
-func (b *Backend) GetRawPoints(userID int) ([]*common.AccountPoints, error) {
+func (b *Backend) GetRawPoints(userID int) (total int, sources []*common.AccountPoints, err error) {
 	// Step 1: Get all accounts related to the user
 	rows, err := b.Storage.Conn().Query(`
 		SELECT site_id, username, profile_url
@@ -125,18 +125,21 @@ func (b *Backend) GetRawPoints(userID int) ([]*common.AccountPoints, error) {
 		WHERE user_id = ?
 	`, userID)
 	if err != nil {
-		return nil, err
+		return 0, nil, err
 	}
 	defer rows.Close()
 
-	accountPoints := []*common.AccountPoints{}
+	var (
+		accountPoints = []*common.AccountPoints{}
+		allSitesTotal = 0
+	)
 
 	// Step 2: For each account, get all related points
 	for rows.Next() {
 		account := &common.Account{}
 		var siteID int
 		if err := rows.Scan(&siteID, &account.Username, &account.ProfileURL); err != nil {
-			return nil, err
+			return 0, nil, err
 		}
 
 		// Only include the account if the associated site exists
@@ -148,20 +151,27 @@ func (b *Backend) GetRawPoints(userID int) ([]*common.AccountPoints, error) {
 
 		accountSources, err := b.getSourcesForAccount(userID, account)
 		if err != nil {
-			return nil, err
+			return 0, nil, err
+		}
+
+		total := 0
+		for _, source := range accountSources {
+			total += source.Real
+			allSitesTotal += source.Real
 		}
 
 		accountPoints = append(accountPoints, &common.AccountPoints{
 			Account: account,
 			Points:  accountSources,
+			Total:   total,
 		})
 	}
 
 	if err := rows.Err(); err != nil {
-		return nil, err
+		return 0, nil, err
 	}
 
-	return accountPoints, nil
+	return allSitesTotal, accountPoints, nil
 }
 
 func (b *Backend) getSourcesForAccount(userID int, account *common.Account) ([]*common.Points, error) {
