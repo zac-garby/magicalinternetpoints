@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>magicalinternetpoints - accounts</title>
+
+    <link rel="stylesheet" href="/static/css/main.css">
+    <link rel="stylesheet" href="/static/css/accounts.css">
+</head>
+<body>
+    <div class="wrapper">
+        <header>
+            <h1><a href="/" class="home-link">magical<span class="bolder">internet</span>points</a></h1>
+        </header>
+        <section>
+            <h1>accounts</h1>
+
+            {{ if gt (len .Accounts) 0 }}
+            <table id="accounts">
+                <thead>
+                    <td>site</td>
+                    <td>user</td>
+                    <td></td>
+                </thead>
+                {{ range .Accounts }}
+                <tr>
+                    <td class="site-name">
+                        <a href="{{ .Site.URL }}">{{ .Site.Title }}</a>
+                    </td>
+                    <td class="username">
+                        <a href="{{ .ProfileURL }}">{{ .Username }}</a>
+                    </td>
+                    <td class="button">
+                        <a href="#">un-link account</a>
+                    </td>
+                </tr>
+                {{ end }}
+            </table>
+            {{ else }}
+            <p>you currently have no linked accounts. add some below!</p>
+            {{ end }}
+        </section>
+        <section>
+            <h1>available integrations</h1>
+
+            {{ if gt (len .NonLinked) 0 }}
+            <table id="integrations">
+                <thead>
+                    <td>site</td>
+                    <td>score comes from?</td>
+                    <td></td>
+                </thead>
+                {{ range .NonLinked }}
+                <tr>
+                    <td>
+                        <a href="{{ .URL }}">{{ .Title }}</a>
+                    </td>
+                    <td>
+                        {{ .ScoreDescription }}
+                    </td>
+                    <td>
+                        <a href="/auth/{{ .OAuthProvider }}">link your {{ .Title }} account</a>
+                    </td>
+                </tr>
+                {{ end }}
+            </table>
+            {{ else }}
+            <p>you've already linked all possible sites. well done!</p>
+            {{ end }}
+        </section>
+    </div>
+</body>
+</html>

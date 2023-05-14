@@ -44,7 +44,7 @@ func New(storage *sqlite3.Storage) (*Backend, error) {
 func (b *Backend) LoadInitData() error {
 	// Query to get all sites
 	sitesQuery := `
-        SELECT id, title, url, score_description
+        SELECT id, title, url, score_description, oauth_provider
         FROM sites
     `
 	sitesRows, err := b.Storage.Conn().Query(sitesQuery)
@@ -57,7 +57,7 @@ func (b *Backend) LoadInitData() error {
 	b.Sites = make(map[int]*common.Site)
 	for sitesRows.Next() {
 		var site common.Site
-		if err := sitesRows.Scan(&site.ID, &site.Title, &site.URL, &site.ScoreDescription); err != nil {
+		if err := sitesRows.Scan(&site.ID, &site.Title, &site.URL, &site.ScoreDescription, &site.OAuthProvider); err != nil {
 			return fmt.Errorf("failed to scan site row: %v", err)
 		}
 

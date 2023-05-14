@@ -85,6 +85,26 @@ func main() {
 	app.Get("/logout", backend.AuthLogoutHandler)
 	app.Get("/update/:sitename", withUser(backend, backend.UpdateHandler))
 
+	app.Get("/accounts",
+		withUser(backend, func(user *common.User, c *fiber.Ctx) error {
+			accounts, err := backend.GetAccounts(user.ID)
+			if err != nil {
+				return err
+			}
+
+			nonLinked, err := backend.GetNonLinkedSites(user.ID)
+			if err != nil {
+				return err
+			}
+
+			return c.Render("accounts", fiber.Map{
+				"Accounts":  accounts,
+				"NonLinked": nonLinked,
+			})
+		}),
+	)
+
+	// OAuth handlers
 	app.Get("/auth/:provider",
 		withUser(backend, func(user *common.User, c *fiber.Ctx) error {
 			return goth_fiber.BeginAuthHandler(c)
@@ -113,7 +133,7 @@ func withUser(backend *backend.Backend, f func(user *common.User, c *fiber.Ctx) 
 	return func(c *fiber.Ctx) error {
 		user, err := backend.CurrentUser(c)
 		if err != nil {
-			return c.Redirect("/welcome")
+			return c.Redirect("/login")
 		}
 
 		return f(user, c)

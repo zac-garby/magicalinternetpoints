@@ -12,6 +12,7 @@ type Site struct {
 	Title            string
 	URL              string
 	ScoreDescription string
+	OAuthProvider    string
 	Sources          []*PointSource
 }
 

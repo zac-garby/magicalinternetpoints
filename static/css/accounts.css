@@ -1,0 +1,10 @@
+table#accounts, table#integrations {
+    font-size: 10pt;
+    border-spacing: 20px 0px;
+}
+
+thead {
+    color: #58372c;
+    font-size: 9pt;
+}
+
