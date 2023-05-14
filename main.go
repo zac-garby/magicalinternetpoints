@@ -122,6 +122,7 @@ func main() {
 	app.Get("/logout", backend.AuthLogoutHandler)
 	app.Get("/update/:sitename", withUser(backend, backend.UpdateHandler))
 	app.Get("/unlink/:sitename", withUser(backend, backend.UnlinkHandler))
+	app.Get("/badge/:username", backend.GetBadge)
 
 	port := os.Getenv("MIP_PORT")
 	if len(port) == 0 {
