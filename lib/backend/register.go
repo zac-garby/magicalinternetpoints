@@ -24,11 +24,26 @@ func (b *Backend) RegisterAccountHandler(u *common.User, c *fiber.Ctx) error {
 		return fmt.Errorf("could not register account: %w", err)
 	}
 
-	if err := b.registerAccount(u, &authUser); err != nil {
+	if err := b.RegisterAccount(u, &authUser); err != nil {
 		return fmt.Errorf("could not register account: %w", err)
 	}
 
-	return c.Redirect("/")
+	return c.Redirect("/accounts")
+}
+
+func (b *Backend) UnlinkHandler(u *common.User, c *fiber.Ctx) error {
+	siteName := c.Params("sitename")
+
+	account, err := b.LookupAccount(u.ID, siteName)
+	if err != nil {
+		return fmt.Errorf("user %s has no account on %s", u.Username, siteName)
+	}
+
+	if err := b.UnlinkAccount(u.ID, account.Site.ID); err != nil {
+		return err
+	}
+
+	return c.Redirect("/accounts")
 }
 
 func (b *Backend) ensureAccountNotRegistered(u *common.User, authUser *goth.User) error {
@@ -59,7 +74,7 @@ func (b *Backend) ensureAccountNotRegistered(u *common.User, authUser *goth.User
 	return fmt.Errorf("account is already registered")
 }
 
-func (b *Backend) registerAccount(u *common.User, authUser *goth.User) error {
+func (b *Backend) RegisterAccount(u *common.User, authUser *goth.User) error {
 	site, err := b.getSiteFromOAuthProvider(authUser.Provider)
 	if err != nil {
 		return err
@@ -108,4 +123,25 @@ func (b *Backend) getSiteFromOAuthProvider(provider string) (*common.Site, error
 	}
 
 	return site, nil
+}
+
+func (b *Backend) UnlinkAccount(userID int, siteID int) error {
+	_, err := b.Storage.Conn().Exec(`
+	DELETE FROM raw_points
+	WHERE user_id = ?
+	AND point_source_id IN (
+		SELECT id
+		FROM point_sources
+		WHERE site_id = ?
+	)`, userID, siteID)
+	if err != nil {
+		return err
+	}
+
+	_, err = b.Storage.Conn().Exec(`
+	DELETE FROM accounts
+	WHERE user_id = ? AND site_id = ?
+	`, userID, siteID)
+
+	return err
 }

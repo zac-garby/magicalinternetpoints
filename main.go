@@ -82,9 +82,6 @@ func main() {
 		return c.Render("welcome", fiber.Map{})
 	})
 
-	app.Get("/logout", backend.AuthLogoutHandler)
-	app.Get("/update/:sitename", withUser(backend, backend.UpdateHandler))
-
 	app.Get("/accounts",
 		withUser(backend, func(user *common.User, c *fiber.Ctx) error {
 			accounts, err := backend.GetAccounts(user.ID)
@@ -115,11 +112,16 @@ func main() {
 		withUser(backend, backend.RegisterAccountHandler),
 	)
 
-	// POST handlers
+	// API handlers
 	app.Post("/login", backend.AuthLoginHandler)
 	app.Post("/register", backend.AuthRegisterHandler)
 	app.Post("/logout", backend.AuthLogoutHandler)
 	app.Post("/update/:sitename", withUser(backend, backend.UpdateHandler))
+	app.Post("/unlink/:sitename", withUser(backend, backend.UnlinkHandler))
+
+	app.Get("/logout", backend.AuthLogoutHandler)
+	app.Get("/update/:sitename", withUser(backend, backend.UpdateHandler))
+	app.Get("/unlink/:sitename", withUser(backend, backend.UnlinkHandler))
 
 	port := os.Getenv("MIP_PORT")
 	if len(port) == 0 {
