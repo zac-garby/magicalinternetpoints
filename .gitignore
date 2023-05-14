@@ -2,3 +2,4 @@ secret
 ENV.sh
 *.sqlite3
 pkgs
+.env

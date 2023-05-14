@@ -97,7 +97,7 @@ func (b *Backend) UpdatePoints(userID int, siteName string, sources map[string]i
 			// If the user doesn't have points for this source yet, insert a new row.
 			_, err = tx.Exec(`
 				INSERT INTO raw_points (user_id, point_source_id, point_total, real_points, last_updated_date)
-				VALUES (?, ?, ?, ?)
+				VALUES (?, ?, ?, ?, ?)
 			`, userID, sourceID, points, realPoints, time.Now().Unix())
 			if err != nil {
 				return err
