@@ -1,4 +1,4 @@
 secret
-ACCESS_TOKENS.sh
+ENV.sh
 *.sqlite3
 pkgs
