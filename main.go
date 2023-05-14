@@ -92,19 +92,7 @@ func main() {
 	)
 
 	app.Get("/auth/callback/:provider",
-		withUser(backend, func(user *common.User, c *fiber.Ctx) error {
-			authUser, err := goth_fiber.CompleteUserAuth(c)
-
-			if err != nil {
-				return fmt.Errorf("error authenticating: %w", err)
-			}
-
-			if err := goth_fiber.Logout(c); err != nil {
-				return fmt.Errorf("error logging out: %w", err)
-			}
-
-			return c.SendString(fmt.Sprintf("%v", authUser))
-		}),
+		withUser(backend, backend.RegisterAccountHandler),
 	)
 
 	// POST handlers
@@ -113,7 +101,12 @@ func main() {
 	app.Post("/logout", backend.AuthLogoutHandler)
 	app.Post("/update/:sitename", withUser(backend, backend.UpdateHandler))
 
-	log.Fatal(app.Listen(":80"))
+	port := os.Getenv("MIP_PORT")
+	if len(port) == 0 {
+		port = "3000"
+	}
+
+	log.Fatal(app.Listen(fmt.Sprintf(":%s", port)))
 }
 
 func withUser(backend *backend.Backend, f func(user *common.User, c *fiber.Ctx) error) func(*fiber.Ctx) error {
