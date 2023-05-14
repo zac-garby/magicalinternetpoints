@@ -7,5 +7,10 @@ services:
     command: go run .
     working_dir: /go-data
     ports:
-      -  3000:3000
+      -  80:3000
     restart: unless-stopped
+    environment:
+      - MIP_PORT=${MIP_PORT}
+      - MIP_BASEURL=${MIP_BASEURL}
+      - GITHUB_TOKEN=${GITHUB_TOKEN}
+      - GITHUB_SECRET=${GITHUB_SECRET}

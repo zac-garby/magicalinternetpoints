@@ -34,7 +34,7 @@ func main() {
 		github.New(
 			os.Getenv("GITHUB_TOKEN"),
 			os.Getenv("GITHUB_SECRET"),
-			"http://magicalinternetpoints.com/auth/callback/github",
+			fmt.Sprintf("%s/auth/callback/github", os.Getenv("MIP_BASEURL")),
 		),
 	)
 
