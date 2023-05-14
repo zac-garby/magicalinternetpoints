@@ -13,14 +13,22 @@ import (
 func (b *Backend) UpdateHandler(user *common.User, c *fiber.Ctx) error {
 	site := c.Params("sitename")
 
-	integration, ok := b.Integrations[site]
-	if !ok {
-		return fmt.Errorf("integration does not exist: %s", site)
+	if err := b.UpdatePoints(user.ID, site); err != nil {
+		return err
 	}
 
-	account, err := b.LookupAccount(user.ID, site)
+	return c.Redirect("/")
+}
+
+func (b *Backend) UpdatePoints(userID int, siteName string) error {
+	integration, ok := b.Integrations[siteName]
+	if !ok {
+		return fmt.Errorf("integration does not exist: %s", siteName)
+	}
+
+	account, err := b.LookupAccount(userID, siteName)
 	if err != nil {
-		return fmt.Errorf("user %s has no account on site: %s", user.Username, site)
+		return fmt.Errorf("user %d has no account on site: %s", userID, siteName)
 	}
 
 	sources, err := integration.GetRawPoints(account)
@@ -28,14 +36,14 @@ func (b *Backend) UpdateHandler(user *common.User, c *fiber.Ctx) error {
 		return fmt.Errorf("problem getting point sources: %w", err)
 	}
 
-	if err = b.UpdatePoints(user.ID, site, sources); err != nil {
+	if err = b.UpdatePointsWithRawSources(userID, siteName, sources); err != nil {
 		return fmt.Errorf("error updating user's points: %w", err)
 	}
 
-	return c.Redirect("/")
+	return nil
 }
 
-func (b *Backend) UpdatePoints(userID int, siteName string, sources map[string]int) error {
+func (b *Backend) UpdatePointsWithRawSources(userID int, siteName string, sources map[string]int) error {
 	tx, err := b.Storage.Conn().Begin()
 	if err != nil {
 		return err

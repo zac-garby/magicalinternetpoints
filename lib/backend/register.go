@@ -95,7 +95,8 @@ func (b *Backend) RegisterAccount(u *common.User, authUser *goth.User) error {
 		return err
 	}
 
-	return nil
+	// finally, update the points to get an initial score
+	return b.UpdatePoints(u.ID, site.Title)
 }
 
 func (b *Backend) getSiteFromOAuthProvider(provider string) (*common.Site, error) {
