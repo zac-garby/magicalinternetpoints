@@ -8,8 +8,8 @@ import (
 )
 
 const (
-	width  = 320
-	height = 36
+	width  = 250
+	height = 28
 )
 
 func (b *Backend) GetBadge(c *fiber.Ctx) error {
@@ -39,17 +39,17 @@ func (b *Backend) drawBadge(dc *gg.Context, points int) error {
 	dc.Fill()
 
 	dc.SetRGB255(187, 173, 156)
-	dc.SetLineWidth(4)
-	dc.DrawRoundedRectangle(2, 2, width-4, height-4, 8)
+	dc.SetLineWidth(2)
+	dc.DrawRoundedRectangle(1, 1, width-2, height-2, 8)
 	dc.Stroke()
 
-	if err := dc.LoadFontFace("./static/fonts/inconsolata-condensed.ttf", 20); err != nil {
+	if err := dc.LoadFontFace("./static/fonts/inconsolata-condensed.ttf", 15); err != nil {
 		return err
 	}
 
 	dc.SetRGB255(60, 10, 43)
 	dc.DrawStringAnchored(
-		fmt.Sprintf("i have %d magicalinternetpoints :)", points),
+		fmt.Sprintf("i have: %d magicalinternetpoints", points),
 		12, height/2, 0, 0.4,
 	)
 
