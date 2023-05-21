@@ -8,6 +8,7 @@ import (
 	"github.com/markbates/goth"
 	"github.com/shareed2k/goth_fiber"
 	"github.com/zac-garby/magicalinternetpoints/lib/common"
+	"github.com/zac-garby/magicalinternetpoints/lib/integrations"
 )
 
 func (b *Backend) RegisterAccountHandler(u *common.User, c *fiber.Ctx) error {
@@ -89,8 +90,9 @@ func (b *Backend) RegisterAccount(u *common.User, authUser *goth.User) error {
 	}
 	defer stmt.Close()
 
-	// TODO: make this not github-specific
-	_, err = stmt.Exec(u.ID, site.ID, authUser.NickName, authUser.RawData["html_url"])
+	profileURL := integrations.Integrations[site.Title].GetProfileURL(authUser)
+
+	_, err = stmt.Exec(u.ID, site.ID, authUser.NickName, profileURL)
 	if err != nil {
 		return err
 	}

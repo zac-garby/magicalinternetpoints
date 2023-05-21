@@ -18,6 +18,7 @@ import (
 
 	"github.com/zac-garby/magicalinternetpoints/lib/backend"
 	"github.com/zac-garby/magicalinternetpoints/lib/common"
+	"github.com/zac-garby/magicalinternetpoints/lib/oauth-providers/reddit"
 )
 
 func main() {
@@ -35,6 +36,11 @@ func main() {
 			os.Getenv("GITHUB_TOKEN"),
 			os.Getenv("GITHUB_SECRET"),
 			fmt.Sprintf("%s/auth/callback/github", os.Getenv("MIP_BASEURL")),
+		),
+		reddit.New(
+			os.Getenv("REDDIT_TOKEN"),
+			os.Getenv("REDDIT_SECRET"),
+			fmt.Sprintf("%s/auth/callback/reddit", os.Getenv("MIP_BASEURL")),
 		),
 	)
 

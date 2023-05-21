@@ -8,6 +8,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/zac-garby/magicalinternetpoints/lib/common"
+	"github.com/zac-garby/magicalinternetpoints/lib/integrations"
 )
 
 func (b *Backend) UpdateHandler(user *common.User, c *fiber.Ctx) error {
@@ -21,14 +22,14 @@ func (b *Backend) UpdateHandler(user *common.User, c *fiber.Ctx) error {
 }
 
 func (b *Backend) UpdatePoints(userID int, siteName string) error {
-	integration, ok := b.Integrations[siteName]
+	integration, ok := integrations.Integrations[siteName]
 	if !ok {
 		return fmt.Errorf("integration does not exist: %s", siteName)
 	}
 
 	account, err := b.LookupAccount(userID, siteName)
 	if err != nil {
-		return fmt.Errorf("user %d has no account on site: %s", userID, siteName)
+		return fmt.Errorf("user has no account on site: %s", siteName)
 	}
 
 	sources, err := integration.GetRawPoints(account)

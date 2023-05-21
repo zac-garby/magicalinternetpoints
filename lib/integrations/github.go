@@ -3,6 +3,7 @@ package integrations
 import (
 	"fmt"
 
+	"github.com/markbates/goth"
 	"github.com/zac-garby/magicalinternetpoints/lib/common"
 )
 
@@ -21,6 +22,22 @@ type jsonGitHubRepoOwner struct {
 
 type jsonGitHubUser struct {
 	Followers int `json:"followers"`
+}
+
+func init() {
+	registerIntegration(&GitHub{})
+}
+
+func (g *GitHub) GetName() string {
+	return "GitHub"
+}
+
+func (g *GitHub) GetOAuthProvider() string {
+	return "github"
+}
+
+func (g *GitHub) GetProfileURL(user *goth.User) string {
+	return fmt.Sprintf("https://github.com/%s", user.NickName)
 }
 
 func (g *GitHub) GetRawPoints(account *common.Account) (map[string]int, error) {

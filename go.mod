@@ -11,4 +11,5 @@ require (
 	github.com/markbates/goth v1.77.0
 	github.com/shareed2k/goth_fiber v0.2.9
 	golang.org/x/crypto v0.9.0
+	golang.org/x/oauth2 v0.8.0
 )
