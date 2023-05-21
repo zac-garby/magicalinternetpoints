@@ -10,6 +10,15 @@ import (
 type Reddit struct {
 }
 
+type redditResponse struct {
+	Data redditUserData `json:"data"`
+}
+
+type redditUserData struct {
+	LinkKarma    int `json:"link_karma"`
+	CommentKarma int `json:"comment_karma"`
+}
+
 func init() {
 	registerIntegration(&Reddit{})
 }
@@ -27,5 +36,15 @@ func (r *Reddit) GetProfileURL(user *goth.User) string {
 }
 
 func (r *Reddit) GetRawPoints(account *common.Account) (map[string]int, error) {
-	return nil, fmt.Errorf("not yet implemented")
+	url := fmt.Sprintf("https://reddit.com/user/%s/about.json", account.Username)
+
+	resp := redditResponse{}
+	if err := getJson(url, &resp); err != nil {
+		return nil, fmt.Errorf("error getting json for reddit user %s: %w", account.Username, err)
+	}
+
+	return map[string]int{
+		"link karma":    resp.Data.LinkKarma,
+		"comment karma": resp.Data.CommentKarma,
+	}, nil
 }
