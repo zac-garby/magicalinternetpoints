@@ -70,11 +70,21 @@ func main() {
 		Title: "Magical Internet Points Metrics",
 	}))
 
-	app.Get("/rates", func(c *fiber.Ctx) error {
-		return c.Render("rates", fiber.Map{
-			"Sites": backend.Sites,
-		})
-	})
+	app.Get("/rates",
+		withUser(backend, func(user *common.User, c *fiber.Ctx) error {
+			total, sources, err := backend.GetRawPoints(user.ID)
+			if err != nil {
+				return err
+			}
+
+			return c.Render("rates", fiber.Map{
+				"Sites":   backend.Sites,
+				"User":    user,
+				"Sources": sources,
+				"Total":   total,
+			})
+		}),
+	)
 
 	app.Get("/login", func(c *fiber.Ctx) error {
 		return c.Render("login", fiber.Map{})
@@ -100,9 +110,16 @@ func main() {
 				return err
 			}
 
+			total, sources, err := backend.GetRawPoints(user.ID)
+			if err != nil {
+				return err
+			}
+
 			return c.Render("accounts", fiber.Map{
 				"Accounts":  accounts,
 				"NonLinked": nonLinked,
+				"Sources":   sources,
+				"Total":     total,
 			})
 		}),
 	)
