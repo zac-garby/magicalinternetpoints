@@ -8,8 +8,8 @@ import (
 )
 
 const (
-	width  = 250
-	height = 28
+	width  = 500
+	height = 56
 )
 
 func (b *Backend) GetBadge(c *fiber.Ctx) error {
@@ -43,7 +43,7 @@ func (b *Backend) drawBadge(dc *gg.Context, points int) error {
 	dc.DrawRoundedRectangle(1, 1, width-2, height-2, 8)
 	dc.Stroke()
 
-	if err := dc.LoadFontFace("./static/fonts/inconsolata-condensed.ttf", 15); err != nil {
+	if err := dc.LoadFontFace("./static/fonts/inconsolata-condensed.ttf", 30); err != nil {
 		return err
 	}
 
