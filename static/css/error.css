@@ -1,10 +1,10 @@
 p.error {
-    color: red;
+    color: #c42154;
     font-weight: bold;
 }
 
 strong.code {
-    color: red;
+    color: #c42154;
 }
 
 span.small {

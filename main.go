@@ -10,14 +10,15 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/monitor"
 	"github.com/gofiber/storage/sqlite3"
 	"github.com/gofiber/template/html"
+	"github.com/shareed2k/goth_fiber"
 
 	"github.com/markbates/goth"
 	"github.com/markbates/goth/providers/github"
 
-	"github.com/shareed2k/goth_fiber"
-
 	"github.com/zac-garby/magicalinternetpoints/lib/backend"
 	"github.com/zac-garby/magicalinternetpoints/lib/common"
+	"github.com/zac-garby/magicalinternetpoints/lib/integrations"
+	"github.com/zac-garby/magicalinternetpoints/lib/integrations/providers"
 	"github.com/zac-garby/magicalinternetpoints/lib/oauth-providers/reddit"
 )
 
@@ -124,15 +125,63 @@ func main() {
 		}),
 	)
 
+	app.Get("/auth/bio/:site_title",
+		withUser(backend, func(user *common.User, c *fiber.Ctx) error {
+			siteTitle := c.Params("site_title")
+
+			site, ok := backend.GetSite(siteTitle)
+			if !ok {
+				return fmt.Errorf("site '%s' does not exist", siteTitle)
+			}
+
+			integration, ok := integrations.Integrations[siteTitle]
+			if !ok {
+				return fmt.Errorf("integration for site '%s' does not exist", siteTitle)
+			}
+
+			bioAuth, ok := integration.GetAuthProvider().(*providers.BioAuthProvider)
+			if !ok {
+				return fmt.Errorf("non-bio auth provider")
+			}
+
+			total, _, err := backend.GetRawPoints(user.ID)
+			if err != nil {
+				return err
+			}
+
+			username := c.Query("username")
+
+			return c.Render("bio_auth", fiber.Map{
+				"Site":       site,
+				"VerifyText": fmt.Sprintf(providers.BIO_AUTH_STRING, user.Username),
+				"Total":      total,
+				"Username":   username, // maybe ""
+				"ProfileURL": fmt.Sprintf(bioAuth.ProfileURL, username),
+			})
+		}),
+	)
+
+	// Registration
+	app.Get("/auth/:site_title",
+		withUser(backend, func(user *common.User, c *fiber.Ctx) error {
+			return backend.BeginAuth(user, c)
+		}),
+	)
+
 	// OAuth handlers
-	app.Get("/auth/:provider",
+	app.Get("/auth/begin-oauth/:provider",
 		withUser(backend, func(user *common.User, c *fiber.Ctx) error {
 			return goth_fiber.BeginAuthHandler(c)
 		}),
 	)
 
 	app.Get("/auth/callback/:provider",
-		withUser(backend, backend.RegisterAccountHandler),
+		withUser(backend, backend.OAuthCallbackHandler),
+	)
+
+	// Bio auth handlers
+	app.Get("/auth/bio/complete/:site_title/:username",
+		withUser(backend, backend.BioAuthCompleteHandler),
 	)
 
 	// API handlers

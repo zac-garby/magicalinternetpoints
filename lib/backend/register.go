@@ -3,15 +3,32 @@ package backend
 import (
 	"database/sql"
 	"fmt"
+	"strings"
 
+	"github.com/gocolly/colly"
 	"github.com/gofiber/fiber/v2"
 	"github.com/markbates/goth"
 	"github.com/shareed2k/goth_fiber"
 	"github.com/zac-garby/magicalinternetpoints/lib/common"
 	"github.com/zac-garby/magicalinternetpoints/lib/integrations"
+	"github.com/zac-garby/magicalinternetpoints/lib/integrations/providers"
 )
 
-func (b *Backend) RegisterAccountHandler(u *common.User, c *fiber.Ctx) error {
+func (b *Backend) BeginAuth(u *common.User, c *fiber.Ctx) error {
+	var (
+		siteTitle       = c.Params("site_title")
+		integration, ok = integrations.Integrations[siteTitle]
+	)
+
+	if !ok {
+		return fmt.Errorf("authentication not implemented for site '%s'", siteTitle)
+	}
+
+	provider := integration.GetAuthProvider()
+	return provider.BeginAuthentication(u, c)
+}
+
+func (b *Backend) OAuthCallbackHandler(u *common.User, c *fiber.Ctx) error {
 	authUser, err := goth_fiber.CompleteUserAuth(c)
 	if err != nil {
 		return fmt.Errorf("error authenticating: %w", err)
@@ -25,11 +42,63 @@ func (b *Backend) RegisterAccountHandler(u *common.User, c *fiber.Ctx) error {
 		return fmt.Errorf("could not register account: %w", err)
 	}
 
-	if err := b.RegisterAccount(u, &authUser); err != nil {
+	site, ok := b.getSiteFromOAuthProvider(authUser.Provider)
+	if !ok {
+		return fmt.Errorf("no provider for oauth %s", authUser.Provider)
+	}
+
+	if err := b.RegisterAccount(u, authUser.NickName, site); err != nil {
 		return fmt.Errorf("could not register account: %w", err)
 	}
 
 	return c.Redirect("/accounts")
+}
+
+func (b *Backend) BioAuthCompleteHandler(u *common.User, c *fiber.Ctx) error {
+	var (
+		col             = colly.NewCollector()
+		requiredText    = fmt.Sprintf(providers.BIO_AUTH_STRING, u.Username)
+		siteTitle       = c.Params("site_title")
+		username        = c.Params("username")
+		authenticated   = false
+		integration, ok = integrations.Integrations[siteTitle]
+	)
+
+	if !ok {
+		return fmt.Errorf("authentication not implemented for site '%s'", siteTitle)
+	}
+
+	if username == "" {
+		return fmt.Errorf("no username provided for site %s", siteTitle)
+	}
+
+	bioProvider, ok := integration.GetAuthProvider().(*providers.BioAuthProvider)
+	if !ok {
+		return fmt.Errorf("bio provider not found for site %s", siteTitle)
+	}
+
+	profileURL := fmt.Sprintf(bioProvider.ProfileURL, username)
+
+	col.OnHTML("p#portfolio-user-bio", func(e *colly.HTMLElement) {
+		content := e.ChildText("*")
+		authenticated = strings.Contains(content, requiredText)
+	})
+
+	col.Visit(profileURL)
+	col.Wait()
+
+	if authenticated {
+		site, ok := b.GetSite(siteTitle)
+		if !ok {
+			return fmt.Errorf("could not authenticate: site %s doesn't exist?", siteTitle)
+		}
+
+		b.RegisterAccount(u, username, site)
+
+		return c.Redirect("/accounts")
+	} else {
+		return fmt.Errorf("authentication failed: please make sure the text '%s' is in your bio somewhere at %s", requiredText, profileURL)
+	}
 }
 
 func (b *Backend) UnlinkHandler(u *common.User, c *fiber.Ctx) error {
@@ -47,19 +116,45 @@ func (b *Backend) UnlinkHandler(u *common.User, c *fiber.Ctx) error {
 	return c.Redirect("/accounts")
 }
 
+func (b *Backend) RegisterAccount(u *common.User, username string, site *common.Site) error {
+	stmt, err := b.Storage.Conn().Prepare(`
+		INSERT INTO accounts (user_id, site_id, username, profile_url)
+		VALUES (?, ?, ?, ?)
+	`)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	profileURL := integrations.Integrations[site.Title].GetProfileURL(username)
+
+	_, err = stmt.Exec(u.ID, site.ID, username, profileURL)
+	if err != nil {
+		return err
+	}
+
+	// finally, update the points to get an initial score
+	return b.UpdatePoints(u.ID, site.Title)
+}
+
 func (b *Backend) ensureAccountNotRegistered(u *common.User, authUser *goth.User) error {
+	site, ok := b.getSiteFromOAuthProvider(authUser.Provider)
+	if !ok {
+		return fmt.Errorf("oauth provider not registered for %s", authUser.Provider)
+	}
+
 	stmt, err := b.Storage.Conn().Prepare(`
 		SELECT accounts.username
 		FROM accounts
 		INNER JOIN sites ON accounts.site_id = sites.id
-		WHERE sites.oauth_provider = ? AND accounts.username = ?
+		WHERE sites.id = ? AND accounts.username = ?
 	`)
 	if err != nil {
 		panic(err)
 	}
 	defer stmt.Close()
 
-	row := stmt.QueryRow(authUser.Provider, authUser.NickName)
+	row := stmt.QueryRow(site.ID, authUser.NickName)
 
 	var username string
 	if err = row.Scan(
@@ -75,57 +170,36 @@ func (b *Backend) ensureAccountNotRegistered(u *common.User, authUser *goth.User
 	return fmt.Errorf("account is already registered")
 }
 
-func (b *Backend) RegisterAccount(u *common.User, authUser *goth.User) error {
-	site, err := b.getSiteFromOAuthProvider(authUser.Provider)
-	if err != nil {
-		return err
+func (b *Backend) getSiteFromOAuthProvider(provider string) (*common.Site, bool) {
+	// TODO: replace this with a lookup in b.Sites?
+
+	for _, site := range b.Sites {
+		integration, ok := integrations.Integrations[site.Title]
+		if !ok {
+			continue
+		}
+
+		oauth, ok := integration.GetAuthProvider().(*providers.OAuthProvider)
+		if !ok {
+			continue
+		}
+
+		if oauth.ProviderName == provider {
+			return site, true
+		}
 	}
 
-	stmt, err := b.Storage.Conn().Prepare(`
-		INSERT INTO accounts (user_id, site_id, username, profile_url)
-		VALUES (?, ?, ?, ?)
-	`)
-	if err != nil {
-		return err
-	}
-	defer stmt.Close()
-
-	profileURL := integrations.Integrations[site.Title].GetProfileURL(authUser)
-
-	_, err = stmt.Exec(u.ID, site.ID, authUser.NickName, profileURL)
-	if err != nil {
-		return err
-	}
-
-	// finally, update the points to get an initial score
-	return b.UpdatePoints(u.ID, site.Title)
+	return nil, false
 }
 
-func (b *Backend) getSiteFromOAuthProvider(provider string) (*common.Site, error) {
-	stmt, err := b.Storage.Conn().Prepare(`
-		SELECT id
-		FROM sites
-		WHERE oauth_provider = ?
-	`)
-	if err != nil {
-		panic(err)
-	}
-	defer stmt.Close()
-
-	row := stmt.QueryRow(provider)
-
-	var id int
-
-	if err = row.Scan(&id); err != nil {
-		return nil, fmt.Errorf("couldn't get OAuth provider: %w", err)
+func (b *Backend) GetSite(title string) (*common.Site, bool) {
+	for _, site := range b.Sites {
+		if site.Title == title {
+			return site, true
+		}
 	}
 
-	site, ok := b.Sites[id]
-	if !ok {
-		return nil, fmt.Errorf("site does not exist with found ID")
-	}
-
-	return site, nil
+	return nil, false
 }
 
 func (b *Backend) UnlinkAccount(userID int, siteID int) error {

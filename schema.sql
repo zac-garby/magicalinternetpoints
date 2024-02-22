@@ -33,6 +33,5 @@ CREATE TABLE IF NOT EXISTS "sites" (
 	"title"	TEXT,
 	"url"	TEXT,
 	"score_description"	TEXT NOT NULL DEFAULT '',
-	"oauth_provider"	TEXT,
 	PRIMARY KEY("id")
 );

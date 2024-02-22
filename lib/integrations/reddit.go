@@ -3,8 +3,8 @@ package integrations
 import (
 	"fmt"
 
-	"github.com/markbates/goth"
 	"github.com/zac-garby/magicalinternetpoints/lib/common"
+	"github.com/zac-garby/magicalinternetpoints/lib/integrations/providers"
 )
 
 type Reddit struct {
@@ -27,12 +27,14 @@ func (r *Reddit) GetName() string {
 	return "Reddit"
 }
 
-func (r *Reddit) GetOAuthProvider() string {
-	return "reddit"
+func (r *Reddit) GetAuthProvider() AuthProvider {
+	return &providers.OAuthProvider{
+		ProviderName: "reddit",
+	}
 }
 
-func (r *Reddit) GetProfileURL(user *goth.User) string {
-	return fmt.Sprintf("https://reddit.com/u/%s", user.NickName)
+func (r *Reddit) GetProfileURL(username string) string {
+	return fmt.Sprintf("https://reddit.com/u/%s", username)
 }
 
 func (r *Reddit) GetRawPoints(account *common.Account) (map[string]int, error) {

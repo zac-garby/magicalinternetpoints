@@ -1,0 +1,10 @@
+pre.verify-text {
+    text-align: center;
+    font-weight: bold;
+    background-color: antiquewhite;
+    padding: 15px;
+    width: 400px;
+    margin: 30px;
+    margin-inline: auto;
+    color: #8e1038;
+}

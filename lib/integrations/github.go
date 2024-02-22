@@ -3,8 +3,8 @@ package integrations
 import (
 	"fmt"
 
-	"github.com/markbates/goth"
 	"github.com/zac-garby/magicalinternetpoints/lib/common"
+	"github.com/zac-garby/magicalinternetpoints/lib/integrations/providers"
 )
 
 type GitHub struct {
@@ -32,12 +32,14 @@ func (g *GitHub) GetName() string {
 	return "GitHub"
 }
 
-func (g *GitHub) GetOAuthProvider() string {
-	return "github"
+func (g *GitHub) GetAuthProvider() AuthProvider {
+	return &providers.OAuthProvider{
+		ProviderName: "github",
+	}
 }
 
-func (g *GitHub) GetProfileURL(user *goth.User) string {
-	return fmt.Sprintf("https://github.com/%s", user.NickName)
+func (g *GitHub) GetProfileURL(username string) string {
+	return fmt.Sprintf("https://github.com/%s", username)
 }
 
 func (g *GitHub) GetRawPoints(account *common.Account) (map[string]int, error) {

@@ -104,3 +104,37 @@ div.eg > *:first-child::before {
     content: "e.g.";
     font-weight: bold;
 }
+
+form {
+    background-color: antiquewhite;
+    padding: 15px;
+    width: 400px;
+    margin: 30px;
+    margin-inline: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+form label {
+    font-style: italic;
+}
+
+form input[type=text] {
+    padding: 2px;
+    font-size: 1rem;
+}
+
+form input[type=submit] {
+    border: none;
+    background-color: none;
+    background: none;
+    cursor: pointer;
+    text-align: left;
+    font-size: 1rem;
+    color: #8e1038;
+    font-weight: bold;
+    text-align: right;
+    margin-top: 20px;
+    text-decoration: underline;
+}
