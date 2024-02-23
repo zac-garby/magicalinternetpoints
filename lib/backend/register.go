@@ -79,8 +79,12 @@ func (b *Backend) BioAuthCompleteHandler(u *common.User, c *fiber.Ctx) error {
 
 	profileURL := fmt.Sprintf(bioProvider.ProfileURL, username)
 
-	col.OnHTML("p#portfolio-user-bio", func(e *colly.HTMLElement) {
-		content := e.ChildText("*")
+	col.OnHTML(bioProvider.BioSelector, func(e *colly.HTMLElement) {
+		content := strings.TrimSpace(e.Text)
+		if content == "" {
+			content = e.ChildText("*")
+		}
+
 		authenticated = strings.Contains(content, requiredText)
 	})
 

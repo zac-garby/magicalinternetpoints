@@ -2,6 +2,7 @@ package integrations
 
 import (
 	"fmt"
+	"html/template"
 	"strconv"
 	"strings"
 
@@ -32,8 +33,12 @@ func (d *Devpost) GetName() string {
 
 func (d *Devpost) GetAuthProvider() AuthProvider {
 	return &providers.BioAuthProvider{
-		ProfileURL:  "https://devpost.com/%s",
-		BioSelector: "p#portfolio-user-bio",
+		ProfileURL:                "https://devpost.com/%s",
+		BioSelector:               "p#portfolio-user-bio",
+		BioLanguage:               "bio",
+		UsernameLanguage:          "username",
+		ExtraUsernameInstructions: template.HTML("if your portfolio is at <a href=\"https://devpost.com/mike_rotch\">https://devpost.com/mike_rotch</a>, your username is mike_rotch"),
+		ExtraVerifyInstructions:   template.HTML("you can update your bio at <a href=\"https://devpost.com/settings\">https://devpost.com/settings</a>."),
 	}
 }
 

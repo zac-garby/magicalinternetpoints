@@ -42,7 +42,7 @@ header h1.points-total {
     text-decoration: underline;
 }
 
-section {
+section, footer {
     padding: 20px;
 }
 
@@ -137,4 +137,9 @@ form input[type=submit] {
     text-align: right;
     margin-top: 20px;
     text-decoration: underline;
+}
+
+footer, footer * {
+    font-size: 0.7rem;
+    color: rgb(171, 156, 134);
 }

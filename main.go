@@ -157,6 +157,7 @@ func main() {
 				"Total":      total,
 				"Username":   username, // maybe ""
 				"ProfileURL": fmt.Sprintf(bioAuth.ProfileURL, username),
+				"Bio":        bioAuth,
 			})
 		}),
 	)
