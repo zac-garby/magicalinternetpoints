@@ -23,6 +23,7 @@
                 <thead>
                     <td>site</td>
                     <td>user</td>
+                    <td>points from</td>
                     <td></td>
                 </thead>
                 {{ range .Accounts }}
@@ -32,6 +33,9 @@
                     </td>
                     <td class="username">
                         <a href="{{ .ProfileURL }}">{{ .Username }}</a>
+                    </td>
+                    <td>
+                        {{ .Site.ScoreDescription }}
                     </td>
                     <td class="button">
                         <a href="/unlink/{{ .Site.Title }}">un-link account</a>
@@ -71,6 +75,7 @@
             <p>you've already linked all possible sites. well done!</p>
             {{ end }}
         </section>
+        {{ template "footer" . }} 
     </div>
 </body>
 </html>
