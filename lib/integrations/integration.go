@@ -2,6 +2,7 @@ package integrations
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/gofiber/fiber/v2"
@@ -38,7 +39,13 @@ func getJson(url string, target interface{}) error {
 	}
 	defer r.Body.Close()
 
-	return json.NewDecoder(r.Body).Decode(target)
+	if err := json.NewDecoder(r.Body).Decode(target); err != nil {
+		if r.StatusCode != 200 {
+			return fmt.Errorf("non-200 error: %w", err)
+		}
+
+		return err
+	}
 }
 
 func registerIntegration(i Integration) {
