@@ -38,7 +38,7 @@ func (r *Reddit) GetProfileURL(username string) string {
 }
 
 func (r *Reddit) GetRawPoints(account *common.Account) (map[string]int, error) {
-	url := fmt.Sprintf("https://reddit.com/user/%s/about.json", account.Username)
+	url := fmt.Sprintf("https://www.reddit.com/user/%s/about.json", account.Username)
 
 	resp := redditResponse{}
 	if err := getJson(url, &resp); err != nil {
