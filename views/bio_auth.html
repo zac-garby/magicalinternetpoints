@@ -25,9 +25,12 @@
                 </p>
                 <p>
                     as a result, you're going to have to manually authenticate by putting a piece
-                    of text in your profile's bio section. first off, what's your {{ .Site.Title }}
-                    username?
+                    of text in your profile's {{ .Bio.BioLanguage }} section. first off, what's your {{ .Site.Title }}
+                    {{ .Bio.UsernameLanguage }}?
                 </p>
+                {{ if .Bio.ExtraUsernameInstructions }}
+                <p>{{ .Bio.ExtraUsernameInstructions }}</p>
+                {{ end }}
                 <form action="">
                     <label for="username">your username:</label>
                     <input type="text" placeholder="username..." name="username">
@@ -35,27 +38,31 @@
                 </form>
             {{ else }}
                 <p>
-                    your username is: <b>{{ .Username }}</b>, which means your profile can be
-                    found at: <a href="{{ .ProfileURL }}">{{ .ProfileURL }}</a>. it might be
+                    your {{ .Bio.UsernameLanguage }} is: <b>{{ .Username }}</b>, which means your profile can be
+                    found at: <a href="{{ .ProfileURL }}" target="_blank">{{ .ProfileURL }}</a>. it might be
                     worth trying this link quickly -- if it doesn't seem right, you may have
-                    got your username wrong (<a href="/auth/bio/{{ .Site.Title }}">try again?</a>).
+                    got your {{ .Bio.UsernameLanguage }} wrong (<a href="/auth/bio/{{ .Site.Title }}">try again?</a>).
                 </p>
                 <p>
-                    if this looks right to you, go ahead and update your bio to include the
+                    if this looks right to you, go ahead and update your {{ .Bio.BioLanguage }} to include the
                     following text:
                 </p>
                 <pre class="verify-text">{{ .VerifyText }}</pre>
                 <p>
-                    this can go wherever you like in your bio, it doesn't matter. also, it only
+                    this can go wherever you like in your {{ .Bio.BioLanguage }}, it doesn't matter. also, it only
                     needs to be there for a minute while we authenticate you, then you can get
                     rid of it again!
                 </p>
+                {{ if .Bio.ExtraVerifyInstructions }}
+                <p>{{ .Bio.ExtraVerifyInstructions }}</p>
+                {{ end }}
                 <ul class="links">
                     <li><a href="/auth/bio/complete/{{ .Site.Title }}/{{ .Username }}">I'm done, please authenticate me!</a></li>
                     <li><a href="/auth/bio/{{ .Site.Title }}">I got my username wrong</a></li>
                 </ul>
             {{ end }}
         </section>
+        {{ template "footer" . }} 
     </div>
 </body>
 </html>
