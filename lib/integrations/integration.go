@@ -46,6 +46,8 @@ func getJson(url string, target interface{}) error {
 
 		return err
 	}
+
+	return nil
 }
 
 func registerIntegration(i Integration) {
