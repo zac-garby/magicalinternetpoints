@@ -3,6 +3,7 @@ package integrations
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 
 	"github.com/gofiber/fiber/v2"
@@ -40,8 +41,13 @@ func getJson(url string, target interface{}) error {
 	defer r.Body.Close()
 
 	if err := json.NewDecoder(r.Body).Decode(target); err != nil {
+		all, err2 := ioutil.ReadAll(r.Body)
+		if err2 != nil {
+			return err2
+		}
+
 		if r.StatusCode != 200 {
-			return fmt.Errorf("non-200 error: %w", err)
+			return fmt.Errorf("%s (%s): %w", r.Status, string(all), err)
 		}
 
 		return err
