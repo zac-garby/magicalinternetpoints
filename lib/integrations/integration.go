@@ -1,14 +1,19 @@
 package integrations
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
+	"net/url"
+	"strings"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/zac-garby/magicalinternetpoints/lib/common"
 )
+
+const UserAgent = "magicalinternetpoints/v1 by zacgarby"
 
 var Integrations map[string]Integration = make(map[string]Integration)
 
@@ -33,15 +38,64 @@ type AuthProvider interface {
 	BeginAuthentication(user *common.User, c *fiber.Ctx) error
 }
 
-func getJson(url string, target interface{}) error {
-	r, err := http.Get(url)
+type ReqOptions struct {
+	Method       string
+	Data         url.Values
+	AuthUsername string
+	AuthPassword string
+	Headers      map[string]string
+}
+
+func getJson(theURL string, target interface{}, opts ...ReqOptions) error {
+	var (
+		method   = "GET"
+		data     = url.Values{}
+		username = ""
+		password = ""
+		headers  = make(map[string]string)
+	)
+
+	if len(opts) > 0 {
+		opt := opts[0]
+		if opt.Method != "" {
+			method = opt.Method
+		}
+		data = opt.Data
+		username = opt.AuthUsername
+		password = opt.AuthPassword
+		if opt.Headers != nil {
+			headers = opt.Headers
+		}
+	}
+
+	req, err := http.NewRequest(method, theURL, strings.NewReader(data.Encode()))
+	if err != nil {
+		return err
+	}
+
+	if len(username) > 0 {
+		req.SetBasicAuth(username, password)
+	}
+
+	for k, v := range headers {
+		req.Header.Add(k, v)
+	}
+
+	r, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return err
 	}
 	defer r.Body.Close()
 
-	if err := json.NewDecoder(r.Body).Decode(target); err != nil {
-		all, err2 := ioutil.ReadAll(r.Body)
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		return err
+	}
+
+	// fmt.Printf("%s -> %s\n", theURL, body)
+
+	if err := json.NewDecoder(bytes.NewReader(body)).Decode(target); err != nil {
+		all, err2 := io.ReadAll(r.Body)
 		if err2 != nil {
 			return err2
 		}
