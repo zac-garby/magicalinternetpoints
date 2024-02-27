@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>magicalinternetpoints - rates</title>
+
+    <link rel="stylesheet" href="/static/css/main.css">
+    <link rel="stylesheet" href="/static/css/badge.css">
+</head>
+<body>
+    <div class="wrapper">
+        <header>
+            <h1><a href="/" class="home-link">magical<span class="bolder">internet</span>points</a></h1>
+            <h1 class="points-total">{{ .Total }}⟐</h1>
+        </header>
+        <section id="rates">
+            <h1>badge</h1>
+
+            <p>
+                want to show off your <b>magicalinternetpoints</b> on another website? we can auto-generate badges showing your points total for you, just like the one below!
+            </p>
+            <div class="badge">
+                <a href="https://magicalinternetpoints.com/">
+                    <img class="badge" src="https://magicalinternetpoints.com/badge/{{ .User.Username }}" />
+                </a>
+            </div>
+            <p>
+                this image can be found at <a href="https://magicalinternetpoints.com/badge/{{ .User.Username }}">https://.../badge/{{ .User.Username }}</a>, or you can copy the following code snippets to place it anywhere they'll let you.
+            </p>
+
+            <h2>HTML</h2>
+            <pre>&lt;a href="https://magicalinternetpoints.com/"&gt;
+    &lt;img src="https://magicalinternetpoints.com/badge/{{ .User.Username }}" /&gt;
+&lt;/a&gt;</pre>
+
+            <h2>Markdown</h2>
+            <pre>[![](https://magicalinternetpoints.com/badge/{{ .User.Username }})](https://magicalinternetpoints.com/)</pre>
+        </section>
+        {{ template "footer" . }} 
+    </div>
+</body>
+</html>

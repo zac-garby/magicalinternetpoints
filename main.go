@@ -99,6 +99,20 @@ func main() {
 		return c.Render("welcome", fiber.Map{})
 	})
 
+	app.Get("/badge",
+		withUser(backend, func(user *common.User, c *fiber.Ctx) error {
+			total, _, err := backend.GetRawPoints(user.ID)
+			if err != nil {
+				return err
+			}
+
+			return c.Render("badge", fiber.Map{
+				"Total": total,
+				"User":  user,
+			})
+		}),
+	)
+
 	app.Get("/accounts",
 		withUser(backend, func(user *common.User, c *fiber.Ctx) error {
 			accounts, err := backend.GetAccounts(user.ID)

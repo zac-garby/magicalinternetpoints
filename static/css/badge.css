@@ -1,0 +1,23 @@
+div.badge {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+img.badge {
+    display: block;
+}
+
+pre {
+    border: 2px solid rgb(187, 173, 156);
+    background-color: rgb(241, 228, 211);
+    padding: 15px;
+    margin-top: 0;
+    overflow-x: auto;
+}
+
+h2 {
+    font-size: 1.1em;
+    margin: 0;
+}
