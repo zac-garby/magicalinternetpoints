@@ -1,0 +1,45 @@
+@media screen and (max-width: 700px) {
+    body {
+        margin: 0;
+    }
+
+    div.wrapper {
+        width: 100vw;
+        padding-inline: 10px;
+        margin-top: 30px;
+    }
+
+    section#home, section#welcome {
+        display: flex;
+        flex-direction: column;
+        gap: 30px;
+    }
+
+    header {
+        align-items: start;
+        height: auto;
+    }
+
+    header h1, header h1.points-total {
+        padding: 0;
+        margin-bottom: 15px;
+    }
+
+    header h1 span {
+        display: block;
+    }
+
+    form {
+        width: 100%;
+    }
+}
+
+@media screen and (max-width: 350px) {
+    header {
+        display: block;
+    }
+
+    header h1 {
+        margin-bottom: 20px;
+    }
+}

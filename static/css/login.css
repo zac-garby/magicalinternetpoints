@@ -23,6 +23,8 @@ form input[type=submit] {
     color: #f0f0f0;
     border: none;
     cursor: pointer;
+    text-decoration: none;
+    text-align: center;
 }
 
 form input[type=submit]:active {

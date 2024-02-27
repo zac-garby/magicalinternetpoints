@@ -1,0 +1,7 @@
+@media screen and (max-width: 700px) {
+    table#accounts, table#integrations {
+        overflow-x: auto;
+        display: block;
+        max-width: 100%;
+    }
+}

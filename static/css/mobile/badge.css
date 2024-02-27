@@ -1,0 +1,9 @@
+@media screen and (max-width: 700px) {
+    div.badge {
+        width: 100%;
+    }
+    
+    img.badge {
+        width: 100%;
+    }
+}
